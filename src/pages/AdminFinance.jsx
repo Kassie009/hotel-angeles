@@ -1,91 +1,118 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, TrendingDown, Calendar, Download, RefreshCw, Settings, Percent, Receipt, Star, Users } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
+import api from '../Config/api';
 
 const AdminFinance = () => {
   const [reservas, setReservas] = useState([]);
-  const [reembolsos, setReembolsos] = useState([]);
-  const [impuestos, setImpuestos] = useState(16);
-  const [descuentoGlobal, setDescuentoGlobal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [stats, setStats] = useState({
+    ingresosTotales: 0,
+    ingresosMes: 0,
+    pagosPendientes: 0,
+    reembolsos: 0,
+    totalReservas: 0,
+    confirmadas: 0,
+    pendientes: 0,
+    checkout: 0,
+    canceladas: 0
+  });
 
   useEffect(() => {
     cargarDatos();
-    cargarConfiguracion();
   }, []);
 
-  const cargarDatos = () => {
-    const storedReservas = JSON.parse(localStorage.getItem('reservations') || '[]');
-    const storedReembolsos = JSON.parse(localStorage.getItem('refunds') || '[]');
-    setReservas(storedReservas);
-    setReembolsos(storedReembolsos);
-  };
+  const cargarDatos = async () => {
+    try {
+      setLoading(true);
+      console.log('Cargando datos financieros...');
 
-  const cargarConfiguracion = () => {
-    const config = JSON.parse(localStorage.getItem('hotelConfig') || '{}');
-    setImpuestos(config.impuestos || 16);
-    setDescuentoGlobal(config.descuentoGlobal || 0);
-  };
+      const response = await api.get('/reservations');
+      console.log('Reservas:', response.data);
 
-  const guardarConfiguracion = () => {
-    const config = { impuestos, descuentoGlobal };
-    localStorage.setItem('hotelConfig', JSON.stringify(config));
-    alert('Configuración guardada');
-  };
+      let reservasData = [];
+      if (Array.isArray(response.data)) {
+        reservasData = response.data;
+      } else if (response.data?.data && Array.isArray(response.data.data)) {
+        reservasData = response.data.data;
+      } else {
+        reservasData = [];
+      }
 
-  // Ingresos: reservas confirmadas (100%) + 10% de reservas canceladas
-  const ingresosPorConfirmadas = reservas
-    .filter(r => r.estado === 'confirmada' || r.estado === 'checkin_realizado')
-    .reduce((sum, r) => sum + (r.total || 0), 0);
+      const reservasConNumeros = reservasData.map(r => ({
+        ...r,
+        total: parseFloat(r.total) || 0
+      }));
 
-  const ingresosPorCanceladas = reservas
-    .filter(r => r.estado === 'cancelada')
-    .reduce((sum, r) => sum + ((r.total || 0) * 0.10), 0);
+      setReservas(reservasConNumeros);
 
-  const ingresosTotales = ingresosPorConfirmadas + ingresosPorCanceladas;
+      const total = reservasConNumeros.length;
+      const pendientes = reservasConNumeros.filter(r => r.estado === 'pendiente').length;
+      const confirmadas = reservasConNumeros.filter(r => r.estado === 'confirmada').length;
+      const checkout = reservasConNumeros.filter(r => r.estado === 'checkout_realizado').length;
+      const canceladas = reservasConNumeros.filter(r => r.estado === 'cancelada').length;
+      
+      const ingresos = reservasConNumeros
+        .filter(r => r.estado === 'confirmada' || r.estado === 'checkin_realizado' || r.estado === 'checkout_realizado')
+        .reduce((sum, r) => sum + (r.total || 0), 0);
 
-  const ingresosMesConfirmadas = reservas
-    .filter(r => {
-      const fechaReserva = new Date(r.fechaReserva);
       const hoy = new Date();
-      return (r.estado === 'confirmada' || r.estado === 'checkin_realizado') &&
-             fechaReserva.getMonth() === hoy.getMonth() &&
-             fechaReserva.getFullYear() === hoy.getFullYear();
-    })
-    .reduce((sum, r) => sum + (r.total || 0), 0);
+      const mesActual = hoy.getMonth();
+      const añoActual = hoy.getFullYear();
 
-  const ingresosMesCanceladas = reservas
-    .filter(r => {
-      const fechaReserva = new Date(r.fechaReserva);
-      const hoy = new Date();
-      return r.estado === 'cancelada' &&
-             fechaReserva.getMonth() === hoy.getMonth() &&
-             fechaReserva.getFullYear() === hoy.getFullYear();
-    })
-    .reduce((sum, r) => sum + ((r.total || 0) * 0.10), 0);
+      const ingresosMes = reservasConNumeros
+        .filter(r => {
+          const fecha = new Date(r.fecha_reserva);
+          return (r.estado === 'confirmada' || r.estado === 'checkin_realizado' || r.estado === 'checkout_realizado') &&
+                 fecha.getMonth() === mesActual &&
+                 fecha.getFullYear() === añoActual;
+        })
+        .reduce((sum, r) => sum + (r.total || 0), 0);
 
-  const ingresosMes = ingresosMesConfirmadas + ingresosMesCanceladas;
+      const pagosPendientes = reservasConNumeros
+        .filter(r => r.estado === 'pendiente')
+        .reduce((sum, r) => sum + (r.total || 0), 0);
 
-  const pagosPendientes = reservas
-    .filter(r => r.estado === 'pendiente')
-    .reduce((sum, r) => sum + (r.total || 0), 0);
+      const reembolsos = reservasConNumeros
+        .filter(r => r.estado === 'cancelada')
+        .reduce((sum, r) => sum + (r.total || 0), 0) * 0.1;
 
-  const totalReembolsos = reembolsos.reduce((sum, r) => sum + (r.montoReembolsado || 0), 0);
+      setStats({
+        ingresosTotales: ingresos,
+        ingresosMes: ingresosMes,
+        pagosPendientes: pagosPendientes,
+        reembolsos: reembolsos,
+        totalReservas: total,
+        confirmadas: confirmadas,
+        pendientes: pendientes,
+        checkout: checkout,
+        canceladas: canceladas
+      });
 
-  const habitacionesTotales = 24;
-  const ocupacion = reservas.filter(r => r.estado === 'confirmada' || r.estado === 'checkin_realizado').length;
-  const porcentajeOcupacion = ((ocupacion / habitacionesTotales) * 100).toFixed(1);
+      setError(null);
+    } catch (error) {
+      console.error('Error al cargar datos:', error);
+      setError('Error al cargar los datos financieros');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const ocupacion = reservas.filter(r => r.estado === 'checkin_realizado' || r.estado === 'confirmada').length;
+  const totalHabitaciones = 30; 
+  const porcentajeOcupacion = totalHabitaciones > 0 ? ((ocupacion / totalHabitaciones) * 100).toFixed(1) : 0;
 
   const totalReservas = reservas.length;
   const cancelaciones = reservas.filter(r => r.estado === 'cancelada').length;
-  const porcentajeCancelaciones = totalReservas > 0 
-    ? ((cancelaciones / totalReservas) * 100).toFixed(1) 
-    : 0;
+  const porcentajeCancelaciones = totalReservas > 0 ? ((cancelaciones / totalReservas) * 100).toFixed(1) : 0;
 
   const habitacionesMasReservadas = () => {
     const conteo = {};
     reservas.forEach(r => {
       if (r.estado !== 'cancelada') {
-        conteo[r.habitacion] = (conteo[r.habitacion] || 0) + 1;
+        const nombre = r.habitacion || r.habitacion_nombre || 'Sin nombre';
+        conteo[nombre] = (conteo[nombre] || 0) + 1;
       }
     });
     return Object.entries(conteo)
@@ -97,7 +124,8 @@ const AdminFinance = () => {
     const conteo = {};
     reservas.forEach(r => {
       if (r.estado !== 'cancelada') {
-        conteo[r.email] = (conteo[r.email] || 0) + 1;
+        const email = r.email || 'sin-email';
+        conteo[email] = (conteo[email] || 0) + 1;
       }
     });
     return Object.entries(conteo)
@@ -105,44 +133,39 @@ const AdminFinance = () => {
       .slice(0, 5)
       .map(([email, count]) => {
         const reserva = reservas.find(r => r.email === email);
-        return { nombre: reserva?.huesped || email, email, reservas: count };
+        return { nombre: reserva?.nombre || email, email, reservas: count };
       });
   };
 
-  const handleRefund = () => {
-    const codigo = prompt('Ingrese el código de reserva para reembolsar:');
-    if (codigo) {
-      const reserva = reservas.find(r => r.codigo === codigo);
-      if (reserva && reserva.estado === 'confirmada') {
-        const cargos10 = reserva.total * 0.10;
-        const montoReembolso = reserva.total - cargos10;
-        if (confirm(`¿Reembolsar $${montoReembolso.toFixed(2)} a ${reserva.huesped}?`)) {
-          const nuevasReservas = reservas.map(r =>
-            r.codigo === codigo ? { ...r, estado: 'cancelada', reembolsado: montoReembolso, fechaCancelacion: new Date().toISOString() } : r
-          );
-          localStorage.setItem('reservations', JSON.stringify(nuevasReservas));
-          
-          const nuevosReembolsos = [...reembolsos, {
-            id: Date.now(),
-            reservaId: reserva.codigo,
-            huesped: reserva.huesped,
-            habitacion: reserva.habitacion,
-            montoOriginal: reserva.total,
-            cargos10: cargos10,
-            montoReembolsado: montoReembolso,
-            fecha: new Date().toISOString(),
-            motivo: 'Reembolso manual por administrador'
-          }];
-          localStorage.setItem('refunds', JSON.stringify(nuevosReembolsos));
-          
-          cargarDatos();
-          alert(`Reembolso de $${montoReembolso.toFixed(2)} procesado`);
-        }
-      } else {
-        alert('Reserva no encontrada o ya cancelada');
-      }
-    }
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-beige-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cafe-200 mx-auto"></div>
+          <p className="text-cafe-100 mt-4">Cargando datos financieros...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-beige-50">
+        <div className="container mx-auto px-4 py-8">
+          <Breadcrumbs />
+          <div className="bg-red-50 text-red-600 p-6 rounded-xl text-center">
+            <p className="font-bold">{error}</p>
+            <button 
+              onClick={cargarDatos}
+              className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              Reintentar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-beige-50">
@@ -151,19 +174,20 @@ const AdminFinance = () => {
         
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-cafe-900 mb-2">Gestión Financiera</h1>
-          <p className="text-cafe-100">Control de ingresos, pagos, reembolsos y configuración financiera</p>
+          <p className="text-cafe-100">Control de ingresos, pagos y estadísticas del hotel</p>
         </div>
         
-        {/* Tarjetas de resumen - 4 tarjetas (sin Ingreso Neto) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-2xl shadow-md p-6">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-cafe-100 text-sm">Ingresos Totales</p>
-                <p className="text-3xl font-bold text-cafe-900">${ingresosTotales.toLocaleString()}</p>
-                <p className="text-xs text-cafe-100 mt-1">Incluye 10% de cancelaciones</p>
+                <p className="text-3xl font-bold text-cafe-900">${stats.ingresosTotales.toFixed(2)}</p>
+                <p className="text-xs text-cafe-100 mt-1">Reservas confirmadas y checkouts</p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center"><DollarSign size={24} className="text-green-600" /></div>
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <DollarSign size={24} className="text-green-600" />
+              </div>
             </div>
           </div>
           
@@ -171,9 +195,11 @@ const AdminFinance = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-cafe-100 text-sm">Ingresos del Mes</p>
-                <p className="text-3xl font-bold text-cafe-900">${ingresosMes.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-cafe-900">${stats.ingresosMes.toFixed(2)}</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center"><Calendar size={24} className="text-blue-600" /></div>
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <Calendar size={24} className="text-blue-600" />
+              </div>
             </div>
           </div>
           
@@ -181,9 +207,11 @@ const AdminFinance = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-cafe-100 text-sm">Pagos Pendientes</p>
-                <p className="text-3xl font-bold text-cafe-900">${pagosPendientes.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-cafe-900">${stats.pagosPendientes.toFixed(2)}</p>
               </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center"><TrendingDown size={24} className="text-yellow-600" /></div>
+              <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                <TrendingDown size={24} className="text-yellow-600" />
+              </div>
             </div>
           </div>
           
@@ -191,90 +219,115 @@ const AdminFinance = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-cafe-100 text-sm">Total Reembolsos</p>
-                <p className="text-3xl font-bold text-error">${totalReembolsos.toLocaleString()}</p>
-                <p className="text-xs text-cafe-100 mt-1">Monto devuelto a clientes</p>
+                <p className="text-3xl font-bold text-red-600">${stats.reembolsos.toFixed(2)}</p>
+                <p className="text-xs text-cafe-100 mt-1">10% de reservas canceladas</p>
               </div>
-              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center"><RefreshCw size={24} className="text-red-600" /></div>
+              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                <RefreshCw size={24} className="text-red-600" />
+              </div>
             </div>
           </div>
         </div>
         
-        {/* Reporte de Ocupación y Habitaciones */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <div className="bg-white rounded-2xl shadow-md p-6">
-            <h2 className="text-xl font-bold text-cafe-900 mb-4 flex items-center gap-2"><TrendingUp size={20} /> Reporte de Ocupación</h2>
+            <h2 className="text-xl font-bold text-cafe-900 mb-4 flex items-center gap-2">
+              <TrendingUp size={20} /> Reporte de Ocupación
+            </h2>
             <div className="space-y-3">
-              <div><div className="flex justify-between text-sm mb-1"><span>Ocupación General</span><span>{porcentajeOcupacion}%</span></div><div className="w-full bg-beige-100 rounded-full h-2"><div className="bg-exito rounded-full h-2" style={{ width: `${porcentajeOcupacion}%` }}></div></div></div>
-              <div><div className="flex justify-between text-sm mb-1"><span>Tasa de Cancelación</span><span>{porcentajeCancelaciones}%</span></div><div className="w-full bg-beige-100 rounded-full h-2"><div className="bg-error rounded-full h-2" style={{ width: `${porcentajeCancelaciones}%` }}></div></div></div>
-              <div><p className="text-sm text-cafe-100 mt-3">Total reservas: {totalReservas}</p><p className="text-sm text-cafe-100">Cancelaciones: {cancelaciones}</p><p className="text-sm text-cafe-100">Habitaciones ocupadas: {ocupacion}/24</p></div>
+              <div>
+                <div className="flex justify-between text-sm mb-1">
+                  <span>Ocupación General</span>
+                  <span>{porcentajeOcupacion}%</span>
+                </div>
+                <div className="w-full bg-beige-100 rounded-full h-2">
+                  <div className="bg-green-600 rounded-full h-2" style={{ width: `${porcentajeOcupacion}%` }}></div>
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between text-sm mb-1">
+                  <span>Tasa de Cancelación</span>
+                  <span>{porcentajeCancelaciones}%</span>
+                </div>
+                <div className="w-full bg-beige-100 rounded-full h-2">
+                  <div className="bg-red-600 rounded-full h-2" style={{ width: `${porcentajeCancelaciones}%` }}></div>
+                </div>
+              </div>
+              <div className="mt-3">
+                <p className="text-sm text-cafe-100">Total reservas: {stats.totalReservas}</p>
+                <p className="text-sm text-cafe-100">Cancelaciones: {stats.canceladas}</p>
+                <p className="text-sm text-cafe-100">Habitaciones ocupadas: {ocupacion}/{totalHabitaciones}</p>
+              </div>
             </div>
           </div>
           
           <div className="bg-white rounded-2xl shadow-md p-6">
-            <h2 className="text-xl font-bold text-cafe-900 mb-4 flex items-center gap-2"><Star size={20} /> Habitaciones Más Reservadas</h2>
+            <h2 className="text-xl font-bold text-cafe-900 mb-4 flex items-center gap-2">
+              <Star size={20} /> Habitaciones Más Reservadas
+            </h2>
             <div className="space-y-3">
-              {habitacionesMasReservadas().length === 0 ? <p className="text-cafe-100 text-center">No hay datos aún</p> : habitacionesMasReservadas().map(([nombre, count], idx) => (
-                <div key={idx} className="flex justify-between items-center"><span className="text-cafe-100">{nombre}</span><span className="font-semibold text-cafe-900">{count} reservas</span></div>
-              ))}
+              {habitacionesMasReservadas().length === 0 ? (
+                <p className="text-cafe-100 text-center">No hay datos aún</p>
+              ) : (
+                habitacionesMasReservadas().map(([nombre, count], idx) => (
+                  <div key={idx} className="flex justify-between items-center">
+                    <span className="text-cafe-100">{nombre}</span>
+                    <span className="font-semibold text-cafe-900">{count} reservas</span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
         
-        {/* Clientes Frecuentes y Configuración */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <div className="bg-white rounded-2xl shadow-md p-6">
-            <h2 className="text-xl font-bold text-cafe-900 mb-4 flex items-center gap-2"><Users size={20} /> Clientes Frecuentes</h2>
+            <h2 className="text-xl font-bold text-cafe-900 mb-4 flex items-center gap-2">
+              <Users size={20} /> Clientes Frecuentes
+            </h2>
             <div className="space-y-3">
-              {clientesFrecuentes().length === 0 ? <p className="text-cafe-100 text-center">No hay datos aún</p> : clientesFrecuentes().map((cliente, idx) => (
-                <div key={idx} className="flex justify-between items-center"><div><p className="font-medium text-cafe-900">{cliente.nombre}</p><p className="text-xs text-cafe-100">{cliente.email}</p></div><span className="text-sm font-semibold text-cafe-900">{cliente.reservas} reservas</span></div>
-              ))}
+              {clientesFrecuentes().length === 0 ? (
+                <p className="text-cafe-100 text-center">No hay datos aún</p>
+              ) : (
+                clientesFrecuentes().map((cliente, idx) => (
+                  <div key={idx} className="flex justify-between items-center">
+                    <div>
+                      <p className="font-medium text-cafe-900">{cliente.nombre}</p>
+                      <p className="text-xs text-cafe-100">{cliente.email}</p>
+                    </div>
+                    <span className="text-sm font-semibold text-cafe-900">{cliente.reservas} reservas</span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
           
           <div className="bg-white rounded-2xl shadow-md p-6">
-            <h2 className="text-xl font-bold text-cafe-900 mb-4 flex items-center gap-2"><Settings size={20} /> Configuración Financiera</h2>
-            <div className="space-y-4">
-              <div><label className="block text-cafe-900 text-sm font-medium mb-1">Impuesto (IVA %)</label><div className="flex gap-2"><input type="number" value={impuestos} onChange={(e) => setImpuestos(Number(e.target.value))} className="input flex-1" /><button onClick={guardarConfiguracion} className="bg-cafe-200 text-white px-4 py-2 rounded-lg">Guardar</button></div></div>
-              <div><label className="block text-cafe-900 text-sm font-medium mb-1">Descuento Global (%)</label><div className="flex gap-2"><input type="number" value={descuentoGlobal} onChange={(e) => setDescuentoGlobal(Number(e.target.value))} className="input flex-1" /><button onClick={guardarConfiguracion} className="bg-cafe-200 text-white px-4 py-2 rounded-lg">Aplicar</button></div></div>
-              <button onClick={handleRefund} className="w-full bg-error/20 hover:bg-error/30 text-error py-2 rounded-lg flex items-center justify-center gap-2 transition-all"><RefreshCw size={16} /> Registrar Reembolso Manual</button>
+            <h2 className="text-xl font-bold text-cafe-900 mb-4 flex items-center gap-2">
+              <Settings size={20} /> Resumen Financiero
+            </h2>
+            <div className="space-y-3">
+              <div className="flex justify-between border-b border-beige-100 pb-2">
+                <span className="text-cafe-100">Total Reservas</span>
+                <span className="font-semibold text-cafe-900">{stats.totalReservas}</span>
+              </div>
+              <div className="flex justify-between border-b border-beige-100 pb-2">
+                <span className="text-cafe-100">Confirmadas</span>
+                <span className="font-semibold text-green-600">{stats.confirmadas}</span>
+              </div>
+              <div className="flex justify-between border-b border-beige-100 pb-2">
+                <span className="text-cafe-100">Pendientes</span>
+                <span className="font-semibold text-yellow-600">{stats.pendientes}</span>
+              </div>
+              <div className="flex justify-between border-b border-beige-100 pb-2">
+                <span className="text-cafe-100">Checkouts</span>
+                <span className="font-semibold text-blue-600">{stats.checkout}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-cafe-100">Canceladas</span>
+                <span className="font-semibold text-red-600">{stats.canceladas}</span>
+              </div>
             </div>
-          </div>
-        </div>
-        
-        {/* Historial de Reembolsos */}
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <h2 className="text-xl font-bold text-cafe-900 mb-4 flex items-center gap-2"><Receipt size={20} /> Historial de Reembolsos</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-cafe-900 text-white">
-                <tr>
-                  <th className="px-4 py-2 text-left">Fecha</th>
-                  <th className="px-4 py-2 text-left">Huésped</th>
-                  <th className="px-4 py-2 text-left">Habitación</th>
-                  <th className="px-4 py-2 text-left">Monto Original</th>
-                  <th className="px-4 py-2 text-left">Cargo 10%</th>
-                  <th className="px-4 py-2 text-left">Reembolsado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reembolsos.length === 0 ? (
-                  <tr>
-                    <td colSpan="6" className="text-center py-4 text-cafe-100">No hay reembolsos registrados</td>
-                  </tr>
-                ) : (
-                  reembolsos.map(ref => (
-                    <tr key={ref.id} className="border-b">
-                      <td className="px-4 py-2">{new Date(ref.fecha).toLocaleDateString()}</td>
-                      <td className="px-4 py-2">{ref.huesped}</td>
-                      <td className="px-4 py-2">{ref.habitacion}</td>
-                      <td className="px-4 py-2">${ref.montoOriginal.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-error">-${ref.cargos10.toFixed(2)}</td>
-                      <td className="px-4 py-2 text-exito">${ref.montoReembolsado.toFixed(2)}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
           </div>
         </div>
       </div>

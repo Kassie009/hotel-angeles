@@ -1,58 +1,31 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { 
-  User, LogOut, LayoutDashboard, CalendarCheck, Settings, 
-  BookOpen, Users, Home, Hotel, BedDouble, DollarSign
-} from 'lucide-react';
+import { User, Search } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Función para cargar usuario desde sessionStorage
-  const cargarUsuario = () => {
-    const user = sessionStorage.getItem('currentUser');
-    if (user) {
-      setCurrentUser(JSON.parse(user));
+  useEffect(() => {
+    const userData = sessionStorage.getItem('user');
+    if (userData) {
+      try {
+        setCurrentUser(JSON.parse(userData));
+      } catch (error) {
+        setCurrentUser(null);
+      }
     } else {
       setCurrentUser(null);
     }
     setLoading(false);
-  };
-
-  useEffect(() => {
-    cargarUsuario();
-    
-    // Escuchar cambios en la URL (cuando el usuario usa "atrás" o "adelante")
-    const handlePopState = () => {
-      cargarUsuario();
-    };
-    
-    window.addEventListener('popstate', handlePopState);
-    
-    // Escuchar cambios en sessionStorage
-    const handleStorageChange = () => {
-      cargarUsuario();
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
-
-  // Escuchar cambios en la ubicación
-  useEffect(() => {
-    cargarUsuario();
-  }, [location.pathname]);
+  }, [user, location.pathname]);
 
   const handleLogout = () => {
-    sessionStorage.removeItem('currentUser');
-    setCurrentUser(null);
+    logout();
     navigate('/', { replace: true });
   };
 
@@ -61,7 +34,7 @@ const Navbar = () => {
       <nav className="bg-cafe-900 text-white shadow-md">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <Link to="/" className="text-2xl font-bold">Prestige Inn</Link>
+            <Link to="/" className="text-2xl font-bold">Hotel Angeles</Link>
             <div className="flex gap-4">
               <div className="w-20 h-6 bg-beige-50/20 rounded animate-pulse"></div>
               <div className="w-16 h-6 bg-beige-50/20 rounded animate-pulse"></div>
@@ -76,63 +49,51 @@ const Navbar = () => {
     <nav className="bg-cafe-900 text-white shadow-md">
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center flex-wrap gap-4">
-          <Link to="/" className="text-2xl font-bold">
-            Prestige Inn
+          <Link 
+            to={currentUser ? '/admin/dashboard' : '/'} 
+            className="text-2xl font-bold"
+          >
+            Hotel Angeles
           </Link>
           
           <div className="flex gap-4 flex-wrap items-center">
-            
-            {/* USUARIO NO LOGUEADO */}
+
             {!currentUser && (
               <>
                 <Link to="/" className="hover:text-beige-100">Inicio</Link>
                 <Link to="/rooms" className="hover:text-beige-100">Habitaciones</Link>
-                <Link to="/login" className="hover:text-beige-100">Login</Link>
+                <Link to="/search-reservation" className="hover:text-beige-100 flex items-center gap-1">
+                  <Search size={16} /> Consultar reserva
+                </Link>
               </>
             )}
             
-            {/* CLIENTE NORMAL */}
-            {currentUser?.role === 'cliente' && (
+
+            {currentUser?.rol === 'admin' && (
               <>
-                <Link to="/" className="hover:text-beige-100">Inicio</Link>
-                <Link to="/rooms" className="hover:text-beige-100">Habitaciones</Link>
-                <Link to="/my-reservations" className="hover:text-beige-100">Mis Reservas</Link>
-                <Link to="/profile" className="hover:text-beige-100">Mi Perfil</Link>
-                <button 
-                  onClick={handleLogout} 
-                  className="bg-error/20 hover:bg-error/30 text-white px-4 py-2 rounded-lg"
-                >
-                  Salir
-                </button>
-              </>
-            )}
-            
-            {/* ADMIN */}
-            {currentUser?.role === 'admin' && (
-              <>
-                <Link to="/admin" className="hover:text-beige-100">Dashboard</Link>
+                <Link to="/admin/dashboard" className="hover:text-beige-100">Dashboard</Link>
                 <Link to="/admin/rooms" className="hover:text-beige-100">Habitaciones</Link>
                 <Link to="/admin/reservations" className="hover:text-beige-100">Reservas</Link>
                 <Link to="/admin/finance" className="hover:text-beige-100">Finanzas</Link>
                 <Link to="/admin/users" className="hover:text-beige-100">Usuarios</Link>
-                <Link to="/admin/settings" className="hover:text-beige-100">Configuración</Link>
-                <Link to="/profile" className="hover:text-beige-100">Mi Perfil</Link>
+                <Link to="/admin/profile" className="hover:text-beige-100">Mi Perfil</Link>
                 <button 
                   onClick={handleLogout} 
-                  className="bg-error/20 hover:bg-error/30 text-white px-4 py-2 rounded-lg"
+                  className="bg-red-600/20 hover:bg-red-600/30 text-white px-4 py-2 rounded-lg transition"
                 >
                   Salir
                 </button>
               </>
             )}
             
-            {/* RECEPCIONISTA */}
-            {currentUser?.role === 'recepcion' && (
+
+            {currentUser?.rol === 'recepcion' && (
               <>
-                <Link to="/reception" className="hover:text-beige-100">Recepción</Link>
+
+                <Link to="/recepcion/dashboard" className="hover:text-beige-100">Reservas</Link>
                 <button 
-                  onClick={handleLogout} 
-                  className="bg-error/20 hover:bg-error/30 text-white px-4 py-2 rounded-lg"
+                  onClick={handleLogout}
+                  className="bg-red-600/20 hover:bg-red-600/30 text-white px-4 py-2 rounded-lg transition"
                 >
                   Salir
                 </button>
@@ -146,8 +107,7 @@ const Navbar = () => {
             <User size={14} />
             <span>{currentUser.nombre}</span>
             <span className="text-xs px-2 py-0.5 bg-beige-50/20 rounded-full">
-              {currentUser.role === 'admin' ? 'Administrador' : 
-               currentUser.role === 'recepcion' ? 'Recepcionista' : 'Cliente'}
+              {currentUser.rol === 'admin' ? 'Administrador' : 'Recepcionista'}
             </span>
           </div>
         )}

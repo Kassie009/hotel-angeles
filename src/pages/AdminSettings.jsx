@@ -8,7 +8,6 @@ const AdminSettings = () => {
   const [hotelAddress, setHotelAddress] = useState('Av. Álvaro Obregón 456, San Luis Río Colorado, Sonora');
 
   const handleSave = () => {
-    // Aquí se guardarían los cambios en localStorage o backend
     alert('Configuración guardada (simulación)');
   };
 

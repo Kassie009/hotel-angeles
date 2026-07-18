@@ -1,381 +1,378 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Calendar, Users, DollarSign, Plus } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { CheckCircle, XCircle, Search, Calendar, DollarSign, Users } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
-import { rooms } from '../data/rooms';
+import api from '../Config/api';
 
 const AdminReservations = () => {
-  const [reservas, setReservas] = useState([]);
-  const [habitaciones, setHabitaciones] = useState([]);
-  const [filtro, setFiltro] = useState('todas');
-  const [busqueda, setBusqueda] = useState('');
-  
-  // Estado para el modal de reserva en sitio
-  const [showNuevaReservaForm, setShowNuevaReservaForm] = useState(false);
-  const [nuevaReserva, setNuevaReserva] = useState({
-    habitacionId: '',
-    huesped: '',
-    email: '',
-    telefono: '',
-    checkIn: '',
-    checkOut: '',
-    huespedes: 1,
-    metodoPago: 'efectivo',
-    pagoCompletado: true
-  });
+  const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [filter, setFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [stats, setStats] = useState(null);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log('Cargando reservas...');
+      const response = await api.get('/reservations');
+      console.log('Respuesta:', response?.data);
+
+      const raw = response?.data;
+      const reservasData = Array.isArray(raw)
+        ? raw
+        : Array.isArray(raw?.data)
+          ? raw.data
+          : Array.isArray(raw?.data?.data)
+            ? raw.data.data
+            : [];
+
+      const reservasConNumeros = reservasData.map((r) => ({
+        ...r,
+        total: parseFloat(r.total) || 0,
+        subtotal: parseFloat(r.subtotal) || 0,
+        iva: parseFloat(r.iva) || 0,
+        noches: parseInt(r.noches) || 0
+      }));
+
+      setReservations(reservasConNumeros);
+
+      const total = reservasConNumeros.length;
+      const pendientes = reservasConNumeros.filter((r) => r.estado === 'pendiente').length;
+      const confirmadas = reservasConNumeros.filter((r) => r.estado === 'confirmada').length;
+      const ingresos = reservasConNumeros
+        .filter(
+          (r) =>
+            r.estado === 'confirmada' ||
+            r.estado === 'checkin_realizado' ||
+            r.estado === 'checkout_realizado'
+        )
+        .reduce((sum, r) => sum + (r.total || 0), 0);
+
+      setStats({ total, pendientes, confirmadas, ingresos });
+    } catch (err) {
+      console.error('Error al cargar reservas:', err);
+      const msg = err?.response?.data?.error || err?.response?.data?.message || err?.message || 'Error al cargar las reservas';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    cargarReservas();
-    cargarHabitaciones();
+    fetchData();
   }, []);
 
-  const cargarReservas = () => {
-    const stored = JSON.parse(localStorage.getItem('reservations') || '[]');
-    setReservas(stored);
-  };
 
-  const cargarHabitaciones = () => {
-    const stored = JSON.parse(localStorage.getItem('rooms') || '[]');
-    if (stored.length === 0 && rooms.length > 0) {
-      const habitacionesIniciales = rooms.map((room, index) => ({
-        id: room.id,
-        numero: `10${index + 1}`,
-        nombre: room.nombre,
-        tipo: room.id === 1 ? 'simple' : room.id === 2 ? 'doble' : 'suite',
-        precio: room.precio,
-        capacidad: room.capacidad,
-        estado: 'disponible',
-        imagen: room.imagen
-      }));
-      setHabitaciones(habitacionesIniciales);
-      localStorage.setItem('rooms', JSON.stringify(habitacionesIniciales));
-    } else {
-      setHabitaciones(stored);
-    }
-  };
+  const q = useMemo(() => (search || '').toLowerCase(), [search]);
 
-  const handleNuevaReservaChange = (e) => {
-    setNuevaReserva({ ...nuevaReserva, [e.target.name]: e.target.value });
-  };
+  const filteredReservations = useMemo(() => {
+    return reservations.filter((r) => {
+      const matchesFilter = filter === 'all' || r.estado === filter;
+      const matchesSearch =
+        (r.codigo || '').toString().toLowerCase().includes(q) ||
+        (r.nombre || '').toString().toLowerCase().includes(q) ||
+        (r.email || '').toString().toLowerCase().includes(q);
 
-  const calcularNochesNueva = () => {
-    if (nuevaReserva.checkIn && nuevaReserva.checkOut) {
-      const inicio = new Date(nuevaReserva.checkIn);
-      const fin = new Date(nuevaReserva.checkOut);
-      const diff = Math.ceil((fin - inicio) / (1000 * 60 * 60 * 24));
-      return diff > 0 ? diff : 0;
-    }
-    return 0;
-  };
-
-  const crearReservaEnSitio = () => {
-    const habitacionSeleccionada = habitaciones.find(h => h.id === parseInt(nuevaReserva.habitacionId));
-    const noches = calcularNochesNueva();
-    const subtotal = habitacionSeleccionada ? habitacionSeleccionada.precio * noches : 0;
-    const iva = subtotal * 0.16;
-    const total = subtotal + iva;
-    
-    const reserva = {
-      id: Date.now(),
-      codigo: `PRESTIGE-${Date.now()}`,
-      roomId: parseInt(nuevaReserva.habitacionId),
-      habitacion: habitacionSeleccionada?.nombre,
-      huesped: nuevaReserva.huesped,
-      email: nuevaReserva.email,
-      telefono: nuevaReserva.telefono,
-      checkIn: nuevaReserva.checkIn,
-      checkOut: nuevaReserva.checkOut,
-      noches: noches,
-      subtotal: subtotal,
-      iva: iva,
-      total: total,
-      estado: nuevaReserva.pagoCompletado ? 'confirmada' : 'pendiente',
-      metodoPago: nuevaReserva.metodoPago,
-      fechaReserva: new Date().toISOString(),
-      reservaEnSitio: true
-    };
-    
-    const existing = JSON.parse(localStorage.getItem('reservations') || '[]');
-    existing.push(reserva);
-    localStorage.setItem('reservations', JSON.stringify(existing));
-    
-    if (nuevaReserva.pagoCompletado) {
-      const nuevasHabitaciones = habitaciones.map(h =>
-        h.id === parseInt(nuevaReserva.habitacionId) ? { ...h, estado: 'ocupada' } : h
-      );
-      setHabitaciones(nuevasHabitaciones);
-      localStorage.setItem('rooms', JSON.stringify(nuevasHabitaciones));
-    }
-    
-    setShowNuevaReservaForm(false);
-    cargarReservas();
-    alert(`✅ Reserva creada: ${reserva.codigo}`);
-    
-    // Resetear formulario
-    setNuevaReserva({
-      habitacionId: '',
-      huesped: '',
-      email: '',
-      telefono: '',
-      checkIn: '',
-      checkOut: '',
-      huespedes: 1,
-      metodoPago: 'efectivo',
-      pagoCompletado: true
+      return matchesFilter && matchesSearch;
     });
-  };
+  }, [reservations, filter, q]);
 
-  const filtrarReservas = () => {
-    let filtradas = [...reservas];
-    
-    if (filtro !== 'todas') {
-      filtradas = filtradas.filter(r => r.estado === filtro);
+  const handleConfirm = async (codigo) => {
+    if (!confirm('¿Confirmar esta reserva?')) return;
+    try {
+      await api.put(`/reservations/${codigo}/status`, { estado: 'confirmada' });
+      alert('Reserva confirmada');
+      await fetchData();
+    } catch (err) {
+      console.error('Error confirmando reserva:', err);
+      alert(err?.response?.data?.error || 'Error al confirmar la reserva');
     }
-    
-    if (busqueda) {
-      filtradas = filtradas.filter(r => 
-        r.huesped?.toLowerCase().includes(busqueda.toLowerCase()) ||
-        r.codigo?.toLowerCase().includes(busqueda.toLowerCase())
-      );
+  };
+
+  const handleCancel = async (codigo) => {
+    if (!confirm('¿Cancelar esta reserva?')) return;
+    try {
+      await api.put(`/reservations/${codigo}/status`, { estado: 'cancelada' });
+      alert('Reserva cancelada');
+      await fetchData();
+    } catch (err) {
+      console.error('Error cancelando reserva:', err);
+      alert(err?.response?.data?.error || 'Error al cancelar la reserva');
     }
-    
-    return filtradas;
   };
 
-  const cambiarEstado = (codigo, nuevoEstado) => {
-    const nuevas = reservas.map(r => 
-      r.codigo === codigo ? { ...r, estado: nuevoEstado } : r
-    );
-    setReservas(nuevas);
-    localStorage.setItem('reservations', JSON.stringify(nuevas));
-    alert(`✅ Reserva ${codigo} actualizada a ${nuevoEstado}`);
+  const handleCheckIn = async (codigo) => {
+    if (!confirm('¿Registrar check-in?')) return;
+    try {
+      await api.put(`/reservations/${codigo}/status`, { estado: 'checkin_realizado' });
+      alert('Check-in registrado');
+      await fetchData();
+    } catch (err) {
+      console.error('Error check-in:', err);
+      alert(err?.response?.data?.error || 'Error al registrar check-in');
+    }
   };
 
-  const getEstadoBadge = (estado) => {
-    const estados = {
-      confirmada: { label: 'Confirmada', color: 'bg-exito/20 text-exito' },
-      pendiente: { label: 'Pendiente', color: 'bg-yellow-100 text-yellow-700' },
-      cancelada: { label: 'Cancelada', color: 'bg-error/20 text-error' },
-      checkin_realizado: { label: 'En curso', color: 'bg-blue-100 text-blue-700' },
-      checkout_realizado: { label: 'Finalizada', color: 'bg-gray-200 text-gray-600' },
-      finalizada: { label: 'Finalizada', color: 'bg-gray-200 text-gray-600' }
+  const handleCheckOut = async (codigo) => {
+    if (!confirm('¿Registrar check-out?')) return;
+    try {
+      await api.put(`/reservations/${codigo}/status`, { estado: 'checkout_realizado' });
+      alert('Check-out registrado');
+      await fetchData();
+    } catch (err) {
+      console.error('Error check-out:', err);
+      alert(err?.response?.data?.error || 'Error al registrar check-out');
+    }
+  };
+
+  const getStatusBadge = (estado) => {
+    const styles = {
+      pendiente: 'bg-yellow-100 text-yellow-800',
+      confirmada: 'bg-green-100 text-green-800',
+      checkin_realizado: 'bg-blue-100 text-blue-800',
+      checkout_realizado: 'bg-purple-100 text-purple-800',
+      cancelada: 'bg-red-100 text-red-800'
     };
-    const e = estados[estado] || { label: estado, color: 'bg-gray-200 text-gray-600' };
-    return <span className={`text-xs px-2 py-1 rounded-full ${e.color}`}>{e.label}</span>;
+    const labels = {
+      pendiente: 'Pendiente',
+      confirmada: 'Confirmada',
+      checkin_realizado: 'Check-in',
+      checkout_realizado: 'Check-out',
+      cancelada: 'Cancelada'
+    };
+
+    return (
+      <span className={`px-3 py-1 rounded-full text-sm font-medium ${styles[estado] || 'bg-gray-100 text-gray-800'}`}>
+        {labels[estado] || estado}
+      </span>
+    );
   };
 
-  const reservasFiltradas = filtrarReservas();
-  const totalReservas = reservas.length;
-  const checkinsHoy = reservas.filter(r => r.checkIn === new Date().toISOString().split('T')[0]).length;
-  const ocupacion = reservas.filter(r => r.estado === 'confirmada' || r.estado === 'checkin_realizado').length;
-  const pendientes = reservas.filter(r => r.estado === 'pendiente').length;
+  const getStatusActions = (reserva) => {
+    switch (reserva.estado) {
+      case 'pendiente':
+        return (
+          <button
+            onClick={() => handleConfirm(reserva.codigo)}
+            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-sm flex items-center gap-1"
+          >
+            <CheckCircle size={14} /> Confirmar
+          </button>
+        );
+      case 'confirmada':
+        return (
+          <button
+            onClick={() => handleCheckIn(reserva.codigo)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm flex items-center gap-1"
+          >
+            Check-in
+          </button>
+        );
+      case 'checkin_realizado':
+        return (
+          <button
+            onClick={() => handleCheckOut(reserva.codigo)}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg text-sm flex items-center gap-1"
+          >
+            Check-out
+          </button>
+        );
+      default:
+        return null;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-beige-50">
+        <div className="container mx-auto px-4 py-8">
+          <Breadcrumbs />
+          <div className="text-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cafe-200 mx-auto" />
+            <p className="text-cafe-100 mt-4">Cargando reservas...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-beige-50">
+        <div className="container mx-auto px-4 py-8">
+          <Breadcrumbs />
+          <div className="bg-red-50 text-red-600 p-6 rounded-xl text-center">
+            <p className="font-bold">{error}</p>
+            <button
+              onClick={() => void fetchData()}
+              className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              Reintentar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-beige-50">
       <div className="container mx-auto px-4 py-8">
-        
         <Breadcrumbs />
-        
-        <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
+
+        <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-cafe-900 mb-2">Gestión de Reservas</h1>
-            <p className="text-cafe-100">Administra la ocupación y estados del resort en tiempo real.</p>
-          </div>
-          <button
-            onClick={() => setShowNuevaReservaForm(true)}
-            className="bg-exito hover:bg-opacity-80 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all"
-          >
-            <Plus size={18} /> Reserva en Sitio
-          </button>
-        </div>
-        
-        {/* Tarjetas resumen */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <p className="text-xs text-cafe-100">Total Reservas</p>
-            <p className="text-2xl font-bold text-cafe-900">{totalReservas}</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <p className="text-xs text-cafe-100">Check-ins Hoy</p>
-            <p className="text-2xl font-bold text-cafe-900">{checkinsHoy}</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <p className="text-xs text-cafe-100">Ocupación Actual</p>
-            <p className="text-2xl font-bold text-cafe-900">{Math.round((ocupacion / 24) * 100)}%</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <p className="text-xs text-cafe-100">Pendientes</p>
-            <p className="text-2xl font-bold text-cafe-900">{pendientes}</p>
+            <h1 className="text-3xl font-bold text-cafe-900">Gestión de Reservas</h1>
+            <p className="text-cafe-100">Administra las reservas del hotel</p>
           </div>
         </div>
-        
-        {/* Filtros y búsqueda */}
-        <div className="bg-white rounded-2xl shadow-md p-6 mb-8">
-          <div className="flex flex-wrap gap-4 justify-between items-center">
-            <div className="flex gap-2 flex-wrap">
-              <button onClick={() => setFiltro('todas')} className={`px-4 py-2 rounded-lg transition-all ${filtro === 'todas' ? 'bg-cafe-200 text-white' : 'bg-beige-50 text-cafe-100 hover:bg-beige-100'}`}>Todas</button>
-              <button onClick={() => setFiltro('confirmada')} className={`px-4 py-2 rounded-lg transition-all ${filtro === 'confirmada' ? 'bg-exito text-white' : 'bg-beige-50 text-cafe-100 hover:bg-beige-100'}`}>Confirmadas</button>
-              <button onClick={() => setFiltro('pendiente')} className={`px-4 py-2 rounded-lg transition-all ${filtro === 'pendiente' ? 'bg-yellow-500 text-white' : 'bg-beige-50 text-cafe-100 hover:bg-beige-100'}`}>Pendientes</button>
-              <button onClick={() => setFiltro('cancelada')} className={`px-4 py-2 rounded-lg transition-all ${filtro === 'cancelada' ? 'bg-error text-white' : 'bg-beige-50 text-cafe-100 hover:bg-beige-100'}`}>Canceladas</button>
-              <button onClick={() => setFiltro('finalizada')} className={`px-4 py-2 rounded-lg transition-all ${filtro === 'finalizada' ? 'bg-gray-500 text-white' : 'bg-beige-50 text-cafe-100 hover:bg-beige-100'}`}>Finalizadas</button>
+
+        {stats && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white rounded-xl p-4 shadow-md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-cafe-100">Total</p>
+                  <p className="text-2xl font-bold text-cafe-900">{stats.total}</p>
+                </div>
+                <Users className="text-cafe-200" size={28} />
+              </div>
             </div>
-            
-            <div className="relative">
+            <div className="bg-white rounded-xl p-4 shadow-md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-cafe-100">Pendientes</p>
+                  <p className="text-2xl font-bold text-yellow-600">{stats.pendientes}</p>
+                </div>
+                <Calendar className="text-yellow-500" size={28} />
+              </div>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-cafe-100">Confirmadas</p>
+                  <p className="text-2xl font-bold text-green-600">{stats.confirmadas}</p>
+                </div>
+                <CheckCircle className="text-green-500" size={28} />
+              </div>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-cafe-100">Ingresos</p>
+                  <p className="text-2xl font-bold text-cafe-900">${stats.ingresos.toFixed(2)}</p>
+                </div>
+                <DollarSign className="text-cafe-200" size={28} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white rounded-xl shadow-md p-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cafe-50" size={18} />
               <input
                 type="text"
-                placeholder="Buscar huésped o código..."
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-beige-200 rounded-xl w-64 focus:outline-none focus:ring-2 focus:ring-cafe-100"
+                placeholder="Buscar por código, cliente o email..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-beige-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cafe-100"
               />
+            </div>
+
+            <div className="flex gap-2 flex-wrap">
+              {['all', 'pendiente', 'confirmada', 'checkin_realizado', 'checkout_realizado', 'cancelada'].map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setFilter(status)}
+                  className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                    filter === status
+                      ? 'bg-cafe-200 text-white'
+                      : 'bg-beige-50 text-cafe-100 hover:bg-beige-100'
+                  }`}
+                >
+                  {status === 'all'
+                    ? 'Todos'
+                    : status === 'pendiente'
+                      ? 'Pendientes'
+                      : status === 'confirmada'
+                        ? 'Confirmadas'
+                        : status === 'checkin_realizado'
+                          ? 'Check-in'
+                          : status === 'checkout_realizado'
+                            ? 'Check-out'
+                            : 'Canceladas'}
+                </button>
+              ))}
             </div>
           </div>
         </div>
-        
-        {/* Tabla de reservas */}
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+
+        <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-cafe-900 text-white">
+              <thead className="bg-beige-50">
                 <tr>
-                  <th className="px-4 py-3 text-left">Huésped</th>
-                  <th className="px-4 py-3 text-left">Habitación</th>
-                  <th className="px-4 py-3 text-left">Estancia</th>
-                  <th className="px-4 py-3 text-left">Estado</th>
-                  <th className="px-4 py-3 text-left">Total</th>
-                  <th className="px-4 py-3 text-left">Acciones</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Código</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Cliente</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Habitación</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Fechas</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Total</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Estado</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Acciones</th>
                 </tr>
               </thead>
-              <tbody>
-                {reservasFiltradas.length === 0 ? (
-                  <tr>
-                    <td colSpan="6" className="text-center py-8 text-cafe-100">
-                      No hay reservas que coincidan con los filtros
+              <tbody className="divide-y divide-beige-100">
+                {filteredReservations.map((reserva) => (
+                  <tr key={reserva.id} className="hover:bg-beige-50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-cafe-900">{reserva.codigo}</td>
+                    <td className="px-6 py-4">
+                      <div>
+                        <p className="font-medium">{reserva.nombre}</p>
+                        <p className="text-sm text-cafe-100">{reserva.email}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">{reserva.habitacion || reserva.habitacion_nombre}</td>
+                    <td className="px-6 py-4 text-sm">
+                      <div>In: {reserva.check_in ? new Date(reserva.check_in).toLocaleDateString('es-MX') : 'N/A'}</div>
+                      <div>Out: {reserva.check_out ? new Date(reserva.check_out).toLocaleDateString('es-MX') : 'N/A'}</div>
+                      <div className="text-xs text-cafe-50">{reserva.noches || 0} noches</div>
+                    </td>
+                    <td className="px-6 py-4 font-bold">${(reserva.total || 0).toFixed(2)}</td>
+                    <td className="px-6 py-4">{getStatusBadge(reserva.estado)}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-wrap gap-2">
+                        {getStatusActions(reserva)}
+                        {reserva.estado !== 'cancelada' && reserva.estado !== 'checkout_realizado' && (
+                          <button
+                            onClick={() => handleCancel(reserva.codigo)}
+                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-sm flex items-center gap-1"
+                          >
+                            <XCircle size={14} /> Cancelar
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
-                ) : (
-                  reservasFiltradas.map((res, idx) => (
-                    <tr key={idx} className="border-b border-beige-100 hover:bg-beige-50 transition-colors">
-                      <td className="px-4 py-3">
-                        <div>
-                          <p className="font-medium text-cafe-900">{res.huesped || 'N/A'}</p>
-                          <p className="text-xs text-cafe-100 font-mono">{res.codigo || 'N/A'}</p>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-cafe-900">{res.habitacion || 'N/A'}</td>
-                      <td className="px-4 py-3">
-                        <p className="text-sm text-cafe-900">{res.checkIn || 'N/A'} → {res.checkOut || 'N/A'}</p>
-                        <p className="text-xs text-cafe-100">{res.noches || 0} noches</p>
-                      </td>
-                      <td className="px-4 py-3">
-                        {getEstadoBadge(res.estado)}
-                      </td>
-                      <td className="px-4 py-3 font-semibold text-cafe-900">${(res.total || 0).toFixed(2)}</td>
-                      <td className="px-4 py-3">
-                        <select
-                          value={res.estado || 'confirmada'}
-                          onChange={(e) => cambiarEstado(res.codigo, e.target.value)}
-                          className="text-sm border border-beige-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-cafe-100"
-                        >
-                          <option value="confirmada">Confirmada</option>
-                          <option value="pendiente">Pendiente</option>
-                          <option value="checkin_realizado">En curso</option>
-                          <option value="cancelada">Cancelada</option>
-                          <option value="finalizada">Finalizada</option>
-                        </select>
-                      </td>
-                    </tr>
-                  ))
-                )}
+                ))}
               </tbody>
             </table>
           </div>
+
+          {filteredReservations.length === 0 && (
+            <div className="text-center py-12 text-cafe-100">
+              No hay reservas que coincidan con los filtros
+            </div>
+          )}
         </div>
       </div>
-      
-      {/* Modal Nueva Reserva en Sitio */}
-      {showNuevaReservaForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-cafe-900">Nueva Reserva en Sitio</h2>
-              <button onClick={() => setShowNuevaReservaForm(false)} className="text-cafe-100 hover:text-cafe-900 text-2xl">✕</button>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-cafe-900 text-sm font-medium mb-1">Habitación</label>
-                <select name="habitacionId" value={nuevaReserva.habitacionId} onChange={handleNuevaReservaChange} className="input" required>
-                  <option value="">Selecciona una habitación</option>
-                  {habitaciones.map(room => {
-                    const disponible = room.estado === 'disponible';
-                    const estadoTexto = {
-                      disponible: '',
-                      ocupada: '🔴 Ocupada',
-                      mantenimiento: '🛠️ Mantenimiento',
-                      limpieza: '🧹 En limpieza'
-                    }[room.estado] || '';
-                    
-                    return (
-                      <option 
-                        key={room.id} 
-                        value={room.id} 
-                        disabled={!disponible}
-                        className={!disponible ? 'text-gray-400' : ''}
-                      >
-                        {room.nombre} - ${room.precio}/noche {estadoTexto && `(${estadoTexto})`}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-              <div>
-                <label className="block text-cafe-900 text-sm font-medium mb-1">Huéspedes</label>
-                <select name="huespedes" value={nuevaReserva.huespedes} onChange={handleNuevaReservaChange} className="input">
-                  {[1,2,3,4,5,6].map(n => <option key={n} value={n}>{n} {n === 1 ? 'persona' : 'personas'}</option>)}
-                </select>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div><label className="block text-cafe-900 text-sm font-medium mb-1">Check-in</label><input type="date" name="checkIn" value={nuevaReserva.checkIn} onChange={handleNuevaReservaChange} className="input" required /></div>
-              <div><label className="block text-cafe-900 text-sm font-medium mb-1">Check-out</label><input type="date" name="checkOut" value={nuevaReserva.checkOut} onChange={handleNuevaReservaChange} className="input" required /></div>
-            </div>
-            
-            <div className="mb-4"><label className="block text-cafe-900 text-sm font-medium mb-1">Huésped</label><input type="text" name="huesped" value={nuevaReserva.huesped} onChange={handleNuevaReservaChange} className="input" placeholder="Nombre completo" required /></div>
-            
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div><label className="block text-cafe-900 text-sm font-medium mb-1">Email</label><input type="email" name="email" value={nuevaReserva.email} onChange={handleNuevaReservaChange} className="input" placeholder="correo@ejemplo.com" required /></div>
-              <div><label className="block text-cafe-900 text-sm font-medium mb-1">Teléfono</label><input type="tel" name="telefono" value={nuevaReserva.telefono} onChange={handleNuevaReservaChange} className="input" placeholder="+52 653 000 0000" required /></div>
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-cafe-900 text-sm font-medium mb-1">Método de Pago</label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2"><input type="radio" name="metodoPago" value="efectivo" checked={nuevaReserva.metodoPago === 'efectivo'} onChange={handleNuevaReservaChange} /> Efectivo</label>
-                <label className="flex items-center gap-2"><input type="radio" name="metodoPago" value="transferencia" checked={nuevaReserva.metodoPago === 'transferencia'} onChange={handleNuevaReservaChange} /> Transferencia</label>
-                <label className="flex items-center gap-2"><input type="radio" name="metodoPago" value="tarjeta" checked={nuevaReserva.metodoPago === 'tarjeta'} onChange={handleNuevaReservaChange} /> Tarjeta</label>
-              </div>
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-cafe-900 text-sm font-medium mb-1">Estado del Pago</label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2"><input type="radio" name="pagoCompletado" value="true" checked={nuevaReserva.pagoCompletado === true} onChange={() => setNuevaReserva({...nuevaReserva, pagoCompletado: true})} /> Pagado (Confirmar)</label>
-                <label className="flex items-center gap-2"><input type="radio" name="pagoCompletado" value="false" checked={nuevaReserva.pagoCompletado === false} onChange={() => setNuevaReserva({...nuevaReserva, pagoCompletado: false})} /> Pendiente</label>
-              </div>
-            </div>
-            
-            <div className="flex gap-3">
-              <button onClick={() => setShowNuevaReservaForm(false)} className="flex-1 bg-gray-200 py-2 rounded-lg">Cancelar</button>
-              <button onClick={crearReservaEnSitio} className="flex-1 bg-cafe-200 text-white py-2 rounded-lg" disabled={!nuevaReserva.habitacionId || !nuevaReserva.checkIn || !nuevaReserva.checkOut || !nuevaReserva.huesped}>Crear Reserva</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default AdminReservations;
+
