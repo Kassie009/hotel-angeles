@@ -79,7 +79,7 @@ const Confirmation = () => {
       pendiente: { label: 'Pendiente de pago', color: 'bg-yellow-100 text-yellow-800' },
       confirmada: { label: 'Confirmada', color: 'bg-green-100 text-green-800' },
       cancelada: { label: 'Cancelada', color: 'bg-red-100 text-red-800' },
-      checkin_realizado: { label: 'En curso', color: 'bg-blue-100 text-blue-800' },
+      checkin_realizado: { label: 'En curso', color: 'bg-blue-200 text-blue-900' },
       checkout_realizado: { label: 'Finalizada', color: 'bg-gray-100 text-gray-800' }
     };
     return estados[estado] || estados.pendiente;
@@ -144,14 +144,14 @@ const Confirmation = () => {
           <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
             reserva.estado === 'confirmada' ? 'bg-green-100' :
             reserva.estado === 'cancelada' ? 'bg-red-100' :
-            reserva.estado === 'checkin_realizado' ? 'bg-blue-100' :
+            reserva.estado === 'checkin_realizado' ? 'bg-blue-200' :
             reserva.estado === 'checkout_realizado' ? 'bg-gray-100' :
             'bg-yellow-100'
           }`}>
             <CheckCircle className={`${
               reserva.estado === 'confirmada' ? 'text-green-600' :
               reserva.estado === 'cancelada' ? 'text-red-600' :
-              reserva.estado === 'checkin_realizado' ? 'text-blue-600' :
+              reserva.estado === 'checkin_realizado' ? 'text-blue-700' :
               reserva.estado === 'checkout_realizado' ? 'text-gray-600' :
               'text-yellow-600'
             }`} size={32} />
@@ -217,20 +217,20 @@ const Confirmation = () => {
         </div>
 
         {reserva.estado === 'pendiente' && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+          <div className="bg-blue-100 border border-blue-300 rounded-xl p-6 mb-8">
             <h3 className="font-bold text-gray-900 mb-4">Datos para transferencia</h3>
             <p className="text-sm text-gray-900 font-medium mb-3">Titular: {hotel.transferencia?.titular || 'Hotel Angeles'}</p>
             
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between border-b border-blue-100 pb-2">
+              <div className="flex justify-between border-b border-blue-200 pb-2">
                 <span className="text-gray-700">Banco:</span>
                 <span className="font-semibold text-gray-900">BANCOMER</span>
               </div>
-              <div className="flex justify-between border-b border-blue-100 pb-2">
+              <div className="flex justify-between border-b border-blue-200 pb-2">
                 <span className="text-gray-700">Cuenta personal:</span>
                 <span className="font-semibold text-gray-900">4152 3137 7796 9580</span>
               </div>
-              <div className="flex justify-between border-b border-blue-100 pb-2">
+              <div className="flex justify-between border-b border-blue-200 pb-2">
                 <span className="text-gray-700">Cuenta fiscal:</span>
                 <span className="font-semibold text-gray-900">00486020682</span>
               </div>
@@ -250,9 +250,9 @@ const Confirmation = () => {
               </p>
             </div>
 
-            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="mt-4 bg-blue-100 border border-blue-300 rounded-lg p-3">
               <p className="text-sm text-gray-900">
-                <span className="font-semibold text-blue-800">¿Requieres factura?</span>
+                <span className="font-semibold text-blue-900">¿Requieres factura?</span>
               </p>
               <p className="text-sm text-gray-900 mt-1">
                 Si necesitas factura, realiza la transferencia a la <span className="font-semibold">Cuenta fiscal</span> (00486020682) y envía tus datos fiscales al correo <strong>hotelangeles_21@hotmail.com</strong>.

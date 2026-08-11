@@ -296,7 +296,7 @@ const AdminRooms = () => {
   const getEstadoBadge = (estado) => {
     const estados = {
       disponible: { label: 'Disponible', color: 'bg-green-100 text-green-700' },
-      ocupada: { label: 'Ocupada', color: 'bg-blue-100 text-blue-700' },
+      ocupada: { label: 'Ocupada', color: 'bg-blue-200 text-blue-800' },
       mantenimiento: { label: 'Mantenimiento', color: 'bg-red-100 text-red-700' },
       limpieza: { label: 'Limpieza', color: 'bg-yellow-100 text-yellow-700' }
     };
@@ -308,8 +308,8 @@ const AdminRooms = () => {
     const tipos = {
       'Habitación Sencilla': 'bg-gray-100 text-gray-700',
       'Habitación Sencilla con Cocineta': 'bg-gray-200 text-gray-700',
-      'Habitación Doble': 'bg-blue-100 text-blue-700',
-      'Habitación Doble con Cocineta': 'bg-blue-200 text-blue-700',
+      'Habitación Doble': 'bg-blue-200 text-blue-800',
+      'Habitación Doble con Cocineta': 'bg-blue-300 text-blue-800',
       'Familiar sin Cocineta': 'bg-purple-100 text-purple-700',
       'Familiar con Cocineta': 'bg-purple-200 text-purple-700',
       'Familiar Extra Grande': 'bg-purple-300 text-purple-700',
@@ -561,7 +561,7 @@ className="bg-cafe-200 hover:bg-cafe-100 text-white px-5 py-2.5 rounded-lg flex 
                     </div>
                   ) : (
                     <label className="cursor-pointer flex flex-col items-center gap-2">
-                      <Upload size={32} className="text-blue-700" />
+                      <Upload size={32} className="text-blue-800" />
                       <span className="text-sm text-gray-700">Haz clic para subir una imagen</span>
                       <span className="text-xs text-gray-500">JPG, PNG, GIF, WEBP, BMP (max 2MB)</span>
                       <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />

@@ -126,7 +126,7 @@ const AdminUsers = () => {
   const getRoleBadge = (rol) => {
     const roles = {
       admin: { label: 'Administrador', color: 'bg-red-100 text-red-700' },
-      recepcion: { label: 'Recepcionista', color: 'bg-blue-100 text-blue-700' }
+      recepcion: { label: 'Recepcionista', color: 'bg-blue-200 text-blue-800' }
     };
     const r = roles[rol] || roles.recepcion;
     return <span className={`text-xs px-2 py-1 rounded-full ${r.color}`}>{r.label}</span>;
@@ -216,8 +216,8 @@ className="bg-cafe-200 hover:bg-cafe-100 text-white px-5 py-2.5 rounded-lg flex 
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex gap-2">
-                          <button onClick={() => handleEdit(user)} className="text-gray-700 hover:text-blue-700 transition-colors" title="Editar"><Edit size={18} /></button>
-                          <button onClick={() => resetPassword(user)} className="text-gray-700 hover:text-blue-700 transition-colors" title="Restablecer contraseña"><RefreshCw size={18} /></button>
+                          <button onClick={() => handleEdit(user)} className="text-gray-700 hover:text-blue-800 transition-colors" title="Editar"><Edit size={18} /></button>
+                          <button onClick={() => resetPassword(user)} className="text-gray-700 hover:text-blue-800 transition-colors" title="Restablecer contraseña"><RefreshCw size={18} /></button>
                           <button onClick={() => toggleUserStatus(user)} className={`transition-colors ${user.activo !== false ? 'text-yellow-500 hover:text-yellow-600' : 'text-green-500 hover:text-green-600'}`} title={user.activo !== false ? 'Desactivar' : 'Activar'}>{user.activo !== false ? <XCircle size={18} /> : <CheckCircle size={18} />}</button>
                           <button onClick={() => handleDelete(user)} className="text-red-500 hover:text-red-600 transition-colors" title="Eliminar"><Trash2 size={18} /></button>
                         </div>

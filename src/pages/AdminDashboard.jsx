@@ -27,7 +27,7 @@ const AdminDashboard = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700" />
             </div>
         );
     }
@@ -46,9 +46,9 @@ const AdminDashboard = () => {
                             <p className="text-gray-500 text-sm">Total Reservas</p>
                             <p className="text-3xl font-bold">{stats?.totalReservas || 0}</p>
                         </div>
-                        <div className="bg-blue-100 p-3 rounded-full">
+                        <div className="bg-blue-200 p-3 rounded-full">
                             <svg
-                                className="w-6 h-6 text-blue-600"
+                                className="w-6 h-6 text-blue-700"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -121,7 +121,7 @@ const AdminDashboard = () => {
                                                     : reserva.estado === 'pendiente'
                                                       ? 'bg-yellow-100 text-yellow-800'
                                                       : reserva.estado === 'checkin_realizado'
-                                                        ? 'bg-blue-100 text-blue-800'
+                                                        ? 'bg-blue-200 text-blue-900'
                                                         : reserva.estado === 'checkout_realizado'
                                                           ? 'bg-gray-100 text-gray-800'
                                                           : 'bg-red-100 text-red-800'

@@ -133,7 +133,7 @@ const AdminReservations = () => {
     const styles = {
       pendiente: 'bg-yellow-100 text-yellow-800',
       confirmada: 'bg-green-100 text-green-800',
-      checkin_realizado: 'bg-blue-100 text-blue-800',
+      checkin_realizado: 'bg-blue-200 text-blue-900',
       checkout_realizado: 'bg-purple-100 text-purple-800',
       cancelada: 'bg-red-100 text-red-800'
     };
@@ -167,7 +167,7 @@ const AdminReservations = () => {
         return (
           <button
             onClick={() => handleCheckIn(reserva.codigo)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm flex items-center gap-1"
+            className="bg-blue-700 hover:bg-blue-800 text-white px-3 py-1 rounded-lg text-sm flex items-center gap-1"
           >
             Check-in
           </button>
@@ -239,7 +239,7 @@ const AdminReservations = () => {
                   <p className="text-sm text-gray-700">Total</p>
                   <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
                 </div>
-                <Users className="text-blue-700" size={28} />
+                <Users className="text-blue-800" size={28} />
               </div>
             </div>
             <div className="bg-white rounded-xl p-4 shadow-md">
@@ -266,7 +266,7 @@ const AdminReservations = () => {
                   <p className="text-sm text-gray-700">Ingresos</p>
                   <p className="text-2xl font-bold text-gray-900">${stats.ingresos.toFixed(2)}</p>
                 </div>
-                <DollarSign className="text-blue-700" size={28} />
+                <DollarSign className="text-blue-800" size={28} />
               </div>
             </div>
           </div>

@@ -73,21 +73,21 @@ const AdminProfile = () => {
                 <h2 className="text-lg font-bold text-gray-900 mb-4">Información Personal</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-center gap-3 p-3 bg-beige-50 rounded-lg">
-                        <User size={20} className="text-blue-700" />
+                        <User size={20} className="text-blue-800" />
                         <div>
                             <p className="text-xs text-gray-700">Nombre</p>
                             <p className="font-medium text-gray-900">{user?.nombre || 'N/A'}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-3 bg-beige-50 rounded-lg">
-                        <Mail size={20} className="text-blue-700" />
+                        <Mail size={20} className="text-blue-800" />
                         <div>
                             <p className="text-xs text-gray-700">Email</p>
                             <p className="font-medium text-gray-900">{user?.email || 'N/A'}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-3 bg-beige-50 rounded-lg">
-                        <Shield size={20} className="text-blue-700" />
+                        <Shield size={20} className="text-blue-800" />
                         <div>
                             <p className="text-xs text-gray-700">Rol</p>
                             <p className="font-medium text-gray-900">{getRolLabel(user?.rol)}</p>

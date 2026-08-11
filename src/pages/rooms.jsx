@@ -400,7 +400,7 @@ const Rooms = () => {
                           {room.nombre}
                         </h2>
 
-                       <div className="flex items-center gap-1.5 bg-blue-50 text-blue-800 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ml-2"><Users size={16} />
+                       <div className="flex items-center gap-1.5 bg-blue-100 text-blue-900 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ml-2"><Users size={16} />
                        {room.capacidad} {room.capacidad === 1 ? 'persona' : 'personas'}
                        </div>
                       </div>

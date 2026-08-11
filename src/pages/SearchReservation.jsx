@@ -28,7 +28,7 @@ const SearchReservation = () => {
       pendiente: { label: 'Pendiente de pago', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
       confirmada: { label: 'Confirmada', color: 'bg-green-100 text-green-800', icon: CheckCircle },
       cancelada: { label: 'Cancelada', color: 'bg-red-100 text-red-800', icon: XCircle },
-      checkin_realizado: { label: 'En curso', color: 'bg-blue-100 text-blue-800', icon: CheckCircle },
+      checkin_realizado: { label: 'En curso', color: 'bg-blue-200 text-blue-900', icon: CheckCircle },
       checkout_realizado: { label: 'Finalizada', color: 'bg-gray-100 text-gray-800', icon: CheckCircle }
     };
     return estados[estado] || estados.pendiente;
@@ -166,7 +166,7 @@ disabled={loading}
                       reserva.estado === 'confirmada' ? 'text-green-600' :
                       reserva.estado === 'pendiente' ? 'text-yellow-600' :
                       reserva.estado === 'cancelada' ? 'text-red-600' :
-                      reserva.estado === 'checkin_realizado' ? 'text-blue-600' :
+                      reserva.estado === 'checkin_realizado' ? 'text-blue-700' :
                       'text-gray-600'
                     }`} />
                     <div>
@@ -255,8 +255,8 @@ disabled={loading}
           )}
 
           {reserva.estado === 'checkin_realizado' && (
-            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <p className="text-sm text-blue-800 flex items-start gap-2">
+            <div className="mt-6 bg-blue-100 border border-blue-300 rounded-xl p-4">
+              <p className="text-sm text-blue-900 flex items-start gap-2">
                 <CheckCircle size={18} className="flex-shrink-0 mt-0.5" />
                 <span>¡Ya estás <strong>hospedado</strong>! Disfruta tu estancia en Hotel Ángeles.</span>
               </p>

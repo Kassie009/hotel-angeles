@@ -284,7 +284,7 @@ const Home = () => {
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Habitaciones Destacadas</h2>
           </div>
-          <Link to="/rooms" className="text-gray-700 hover:text-blue-700 font-medium flex items-center gap-1 group">
+          <Link to="/rooms" className="text-gray-700 hover:text-blue-800 font-medium flex items-center gap-1 group">
             Ver todas <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>

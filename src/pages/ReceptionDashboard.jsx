@@ -84,7 +84,7 @@ const ReceptionDashboard = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
             </div>
         );
     }
@@ -187,7 +187,7 @@ const ReceptionDashboard = () => {
                                                         : reserva.estado === 'pendiente'
                                                           ? 'bg-yellow-100 text-yellow-800'
                                                           : reserva.estado === 'checkin_realizado'
-                                                            ? 'bg-blue-100 text-blue-800'
+                                                            ? 'bg-blue-200 text-blue-900'
                                                             : reserva.estado === 'checkout_realizado'
                                                               ? 'bg-gray-100 text-gray-800'
                                                               : 'bg-red-100 text-red-800'
@@ -208,7 +208,7 @@ const ReceptionDashboard = () => {
                                                     {reserva.estado === 'confirmada' && (
                                                         <button
                                                             onClick={() => cambiarEstado(reserva.codigo, 'checkin_realizado')}
-                                                            className="bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600"
+                                                            className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
                                                         >
                                                             Check-in
                                                         </button>

@@ -197,8 +197,8 @@ const AdminFinance = () => {
                 <p className="text-gray-700 text-sm">Ingresos del Mes</p>
                 <p className="text-3xl font-bold text-gray-900">${stats.ingresosMes.toFixed(2)}</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <Calendar size={24} className="text-blue-600" />
+              <div className="w-12 h-12 bg-blue-200 rounded-xl flex items-center justify-center">
+                <Calendar size={24} className="text-blue-700" />
               </div>
             </div>
           </div>
@@ -321,7 +321,7 @@ const AdminFinance = () => {
               </div>
               <div className="flex justify-between border-b border-beige-100 pb-2">
                 <span className="text-gray-700">Checkouts</span>
-                <span className="font-semibold text-blue-600">{stats.checkout}</span>
+                <span className="font-semibold text-blue-700">{stats.checkout}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-700">Canceladas</span>
