@@ -20,6 +20,10 @@ dist-ssr/
 backend/.env
 *.local
 
+# Datos subidos desde el panel (no versionar)
+backend/uploads/
+backend/_backup_reservations.sql
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -31,5 +35,3 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
-
-backend/uploads/comprobantes/

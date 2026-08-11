@@ -5,35 +5,58 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(() => !!sessionStorage.getItem('user'));
 
     useEffect(() => {
-        const userData = sessionStorage.getItem('user');  
-        
-        if (userData) {
-            try {
-                const parsedUser = JSON.parse(userData);
-                Promise.resolve().then(() => setUser(parsedUser));
+        const userData = sessionStorage.getItem('user');
 
-                api.get('/auth/verify')
-                    .then(response => {
-                        if (!response.data.valid) {
-                            sessionStorage.removeItem('user');
-                            Promise.resolve().then(() => setUser(null));
-                        }
-                    })
-                    .catch(() => {
-                        sessionStorage.removeItem('user');
-                        Promise.resolve().then(() => setUser(null));
-                    });
-            } catch (err) {
+        if (!userData) return;
+
+        let active = true;
+
+        Promise.resolve()
+            .then(() => JSON.parse(userData))
+            .then((parsedUser) => {
+                if (!active) return;
+                setUser(parsedUser);
+                return api.get('/auth/verify');
+            })
+            .then((response) => {
+                if (!active || !response) return;
+                if (!response.data.valid) {
+                    sessionStorage.removeItem('user');
+                    setUser(null);
+                }
+            })
+            .catch(() => {
+                if (!active) return;
                 sessionStorage.removeItem('user');
-                Promise.resolve().then(() => setUser(null));
+                setUser(null);
+            })
+            .finally(() => {
+                if (active) setLoading(false);
+            });
+
+        return () => { active = false; };
+    }, []);
+
+    useEffect(() => {
+        const onPageShow = (e) => {
+            if (e.persisted) {
+                const userData = sessionStorage.getItem('user');
+                if (userData) {
+                    try {
+                        setUser(JSON.parse(userData));
+                        return;
+                    } catch {
+                        sessionStorage.removeItem('user');
+                    }
+                }
+                setUser(null);
             }
-
-        }
-        setLoading(false);
-
+        };
+        window.addEventListener('pageshow', onPageShow);
+        return () => window.removeEventListener('pageshow', onPageShow);
     }, []);
 
     const login = async (email, password) => {
@@ -86,6 +109,7 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

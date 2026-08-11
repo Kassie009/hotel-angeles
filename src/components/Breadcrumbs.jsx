@@ -30,14 +30,14 @@ const Breadcrumbs = () => {
       <nav className="flex py-3 px-5 bg-beige-100 rounded-lg mb-4" aria-label="Breadcrumb">
         <ol className="inline-flex items-center space-x-1 md:space-x-3">
           <li className="inline-flex items-center">
-            <Link to="/" className="text-cafe-900 hover:text-cafe-100 flex items-center gap-1">
+            <Link to="/" className="text-gray-900 hover:text-gray-700 flex items-center gap-1">
               <Home size={16} />
               <span>Inicio</span>
             </Link>
           </li>
           <li className="inline-flex items-center">
-            <span className="mx-2 text-cafe-50">/</span>
-            <span className="text-cafe-100 font-medium">Dashboard</span>
+            <span className="mx-2 text-gray-500">/</span>
+            <span className="text-gray-700 font-medium">Dashboard</span>
           </li>
         </ol>
       </nav>
@@ -49,14 +49,14 @@ const Breadcrumbs = () => {
       <nav className="flex py-3 px-5 bg-beige-100 rounded-lg mb-4" aria-label="Breadcrumb">
         <ol className="inline-flex items-center space-x-1 md:space-x-3">
           <li className="inline-flex items-center">
-            <Link to="/" className="text-cafe-900 hover:text-cafe-100 flex items-center gap-1">
+            <Link to="/" className="text-gray-900 hover:text-gray-700 flex items-center gap-1">
               <Home size={16} />
               <span>Inicio</span>
             </Link>
           </li>
           <li className="inline-flex items-center">
-            <span className="mx-2 text-cafe-50">/</span>
-            <span className="text-cafe-100 font-medium">Confirmación</span>
+            <span className="mx-2 text-gray-500">/</span>
+            <span className="text-gray-700 font-medium">Confirmación</span>
           </li>
         </ol>
       </nav>
@@ -68,14 +68,14 @@ const Breadcrumbs = () => {
       <nav className="flex py-3 px-5 bg-beige-100 rounded-lg mb-4" aria-label="Breadcrumb">
         <ol className="inline-flex items-center space-x-1 md:space-x-3">
           <li className="inline-flex items-center">
-            <Link to="/" className="text-cafe-900 hover:text-cafe-100 flex items-center gap-1">
+            <Link to="/" className="text-gray-900 hover:text-gray-700 flex items-center gap-1">
               <Home size={16} />
               <span>Inicio</span>
             </Link>
           </li>
           <li className="inline-flex items-center">
-            <span className="mx-2 text-cafe-50">/</span>
-            <span className="text-cafe-100 font-medium">Reservar</span>
+            <span className="mx-2 text-gray-500">/</span>
+            <span className="text-gray-700 font-medium">Reservar</span>
           </li>
         </ol>
       </nav>
@@ -105,7 +105,7 @@ const Breadcrumbs = () => {
           <li className="inline-flex items-center">
             <Link
               to="/"
-              className="text-cafe-900 hover:text-cafe-100 flex items-center gap-1"
+              className="text-gray-900 hover:text-gray-700 flex items-center gap-1"
             >
               <Home size={16} />
               <span>Inicio</span>
@@ -113,13 +113,13 @@ const Breadcrumbs = () => {
           </li>
 
           <li className="inline-flex items-center">
-            <span className="mx-2 text-cafe-50">/</span>
-            <Link to={dashboardLink} className="text-cafe-900 hover:text-cafe-100">Dashboard</Link>
+            <span className="mx-2 text-gray-500">/</span>
+            <Link to={dashboardLink} className="text-gray-900 hover:text-gray-700">Dashboard</Link>
           </li>
 
           <li className="inline-flex items-center">
-            <span className="mx-2 text-cafe-50">/</span>
-            <span className="text-cafe-100 font-medium">{sectionLabel[sectionKey] || 'Dashboard'}</span>
+            <span className="mx-2 text-gray-500">/</span>
+            <span className="text-gray-700 font-medium">{sectionLabel[sectionKey] || 'Dashboard'}</span>
           </li>
         </ol>
       </nav>
@@ -131,7 +131,7 @@ const Breadcrumbs = () => {
       <ol className="inline-flex items-center space-x-1 md:space-x-3">
         {(!isAdminRoute) && (
           <li className="inline-flex items-center">
-            <Link to="/" className="text-cafe-900 hover:text-cafe-100 flex items-center gap-1">
+            <Link to="/" className="text-gray-900 hover:text-gray-700 flex items-center gap-1">
               <Home size={16} />
               <span>Inicio</span>
             </Link>
@@ -148,12 +148,12 @@ const Breadcrumbs = () => {
           return (
             <li key={to} className="inline-flex items-center">
               {(index > 0 || !isAdminRoute) && (
-                <span className="mx-2 text-cafe-50">/</span>
+                <span className="mx-2 text-gray-500">/</span>
               )}
               {isLast ? (
-                <span className="text-cafe-100 font-medium">{displayName}</span>
+                <span className="text-gray-700 font-medium">{displayName}</span>
               ) : (
-                <Link to={to} className="text-cafe-900 hover:text-cafe-100">
+                <Link to={to} className="text-gray-900 hover:text-gray-700">
                   {displayName}
                 </Link>
               )}

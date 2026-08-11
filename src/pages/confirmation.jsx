@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { CheckCircle, ArrowLeft } from 'lucide-react';
 import api from '../Config/api';  
-import { hotel } from '../config/hotel';
+import { hotel } from '../Config/hotel';
 
 const Confirmation = () => {
   const { codigo } = useParams();
@@ -91,7 +91,7 @@ const Confirmation = () => {
         <Breadcrumbs />
         <div className="text-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cafe-200 mx-auto"></div>
-          <p className="text-cafe-100 mt-4">Cargando confirmación...</p>
+          <p className="text-gray-700 mt-4">Cargando confirmación...</p>
         </div>
       </div>
     );
@@ -102,20 +102,20 @@ const Confirmation = () => {
       <div className="container mx-auto px-4 py-8">
         <Breadcrumbs />
         <div className="text-center py-20 max-w-md mx-auto">
-          <p className="text-cafe-100 text-lg mb-2">Error al cargar la reserva</p>
-          <p className="text-cafe-50 text-sm mb-6">
+          <p className="text-gray-700 text-lg mb-2">Error al cargar la reserva</p>
+          <p className="text-gray-500 text-sm mb-6">
             No pudimos encontrar la reserva con el código proporcionado.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link 
               to="/rooms" 
-              className="bg-cafe-200 hover:bg-cafe-100 text-white px-6 py-2 rounded-xl transition inline-block"
+              className="btn-primary px-6 py-2 inline-block"
             >
               Ver Habitaciones
             </Link>
             <Link 
               to="/search-reservation" 
-              className="border-2 border-cafe-200 text-cafe-200 hover:bg-cafe-200 hover:text-white px-6 py-2 rounded-xl transition inline-block"
+              className="btn-outline px-6 py-2 inline-block"
             >
               Consultar mi reserva
             </Link>
@@ -134,7 +134,7 @@ const Confirmation = () => {
       
       <button 
         onClick={() => navigate('/rooms')}
-        className="text-cafe-100 hover:text-cafe-900 mb-6 flex items-center gap-2 transition"
+        className="text-gray-700 hover:text-gray-900 mb-6 flex items-center gap-2 transition"
       >
         <ArrowLeft size={18} /> Volver a habitaciones
       </button>
@@ -156,14 +156,14 @@ const Confirmation = () => {
               'text-yellow-600'
             }`} size={32} />
           </div>
-          <h1 className="text-3xl font-bold text-cafe-900">
+          <h1 className="text-3xl font-bold text-gray-900">
             {reserva.estado === 'confirmada' && 'Reserva Confirmada'}
             {reserva.estado === 'pendiente' && 'Reserva Pendiente'}
             {reserva.estado === 'cancelada' && 'Reserva Cancelada'}
             {reserva.estado === 'checkin_realizado' && 'Estancia en Curso'}
             {reserva.estado === 'checkout_realizado' && 'Estancia Finalizada'}
           </h1>
-          <p className="text-cafe-100 mt-2">
+          <p className="text-gray-700 mt-2">
             {reserva.estado === 'pendiente' && 'Tu reserva está pendiente de pago. Sigue los pasos para completarla.'}
             {reserva.estado === 'confirmada' && 'Tu pago ha sido verificado. ¡Te esperamos!'}
             {reserva.estado === 'cancelada' && 'Esta reserva ha sido cancelada.'}
@@ -180,7 +180,7 @@ const Confirmation = () => {
         <div className="bg-cafe-50 rounded-xl p-6 mb-8">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-cafe-100">Estado</p>
+              <p className="text-sm text-gray-700">Estado</p>
               <p className="text-xl font-bold">
                 <span className={`inline-block px-3 py-1 rounded-full text-sm ${estadoInfo.color}`}>
                   {estadoInfo.label}
@@ -188,65 +188,74 @@ const Confirmation = () => {
               </p>
             </div>
             <div>
-              <p className="text-sm text-cafe-100">Total a pagar</p>
-              <p className="text-xl font-bold text-cafe-900">${total.toFixed(2)}</p>
+              <p className="text-sm text-gray-700">Total a pagar</p>
+              <p className="text-xl font-bold text-gray-900">${total.toFixed(2)}</p>
             </div>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-cafe-100">Check-in</p>
-              <p className="font-medium text-cafe-900">
+              <p className="text-sm text-gray-700">Check-in</p>
+              <p className="font-medium text-gray-900">
                 {formatearFecha(reserva.check_in || reserva.checkIn)}
               </p>
             </div>
             <div>
-              <p className="text-sm text-cafe-100">Check-out</p>
-              <p className="font-medium text-cafe-900">
+              <p className="text-sm text-gray-700">Check-out</p>
+              <p className="font-medium text-gray-900">
                 {formatearFecha(reserva.check_out || reserva.checkOut)}
               </p>
             </div>
           </div>
           <div className="mt-2">
-            <p className="text-sm text-cafe-100">Habitación</p>
-            <p className="font-medium text-cafe-900">{reserva.habitacion}</p>
+            <p className="text-sm text-gray-700">Habitación</p>
+            <p className="font-medium text-gray-900">{reserva.habitacion}</p>
           </div>
           <div className="mt-2">
-            <p className="text-sm text-cafe-100">Noches</p>
-            <p className="font-medium text-cafe-900">{reserva.noches}</p>
+            <p className="text-sm text-gray-700">Noches</p>
+            <p className="font-medium text-gray-900">{reserva.noches}</p>
           </div>
         </div>
 
         {reserva.estado === 'pendiente' && (
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-            <h3 className="font-bold text-cafe-900 mb-4">Datos para transferencia</h3>
-            <p className="text-sm text-cafe-900 font-medium mb-3">Titular: {hotel.transferencia?.titular || 'Hotel Angeles'}</p>
+            <h3 className="font-bold text-gray-900 mb-4">Datos para transferencia</h3>
+            <p className="text-sm text-gray-900 font-medium mb-3">Titular: {hotel.transferencia?.titular || 'Hotel Angeles'}</p>
             
             <div className="space-y-2 text-sm">
               <div className="flex justify-between border-b border-blue-100 pb-2">
-                <span className="text-cafe-100">Banco:</span>
-                <span className="font-semibold text-cafe-900">BANCOMER</span>
+                <span className="text-gray-700">Banco:</span>
+                <span className="font-semibold text-gray-900">BANCOMER</span>
               </div>
               <div className="flex justify-between border-b border-blue-100 pb-2">
-                <span className="text-cafe-100">Cuenta personal:</span>
-                <span className="font-semibold text-cafe-900">4152 3137 7796 9580</span>
+                <span className="text-gray-700">Cuenta personal:</span>
+                <span className="font-semibold text-gray-900">4152 3137 7796 9580</span>
               </div>
               <div className="flex justify-between border-b border-blue-100 pb-2">
-                <span className="text-cafe-100">Cuenta fiscal:</span>
-                <span className="font-semibold text-cafe-900">00486020682</span>
+                <span className="text-gray-700">Cuenta fiscal:</span>
+                <span className="font-semibold text-gray-900">00486020682</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-cafe-100">Beneficiario:</span>
-                <span className="font-semibold text-cafe-900">{hotel.transferencia?.titular || 'Hotel Angeles'}</span>
+                <span className="text-gray-700">Beneficiario:</span>
+                <span className="font-semibold text-gray-900">{hotel.transferencia?.titular || 'Hotel Angeles'}</span>
               </div>
             </div>
             
             <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <p className="text-sm text-cafe-900">
+              <p className="text-sm text-gray-900">
                 <span className="font-semibold">Concepto de pago:</span> Usa tu código de reserva:
-                <span className="font-bold text-cafe-900 block text-center text-lg mt-1">{reserva.codigo}</span>
+                <span className="font-bold text-gray-900 block text-center text-lg mt-1">{reserva.codigo}</span>
               </p>
-              <p className="text-sm text-cafe-900 mt-2">
+<p className="text-sm text-gray-900 mt-2">
                 Envía tu comprobante al correo <strong>{hotel.email || 'hotel@angeles.com'}</strong> para confirmar tu reserva.
+              </p>
+            </div>
+
+            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm text-gray-900">
+                <span className="font-semibold text-blue-800">¿Requieres factura?</span>
+              </p>
+              <p className="text-sm text-gray-900 mt-1">
+                Si necesitas factura, realiza la transferencia a la <span className="font-semibold">Cuenta fiscal</span> (00486020682) y envía tus datos fiscales al correo <strong>hotelangeles_21@hotmail.com</strong>.
               </p>
             </div>
           </div>
@@ -268,10 +277,10 @@ const Confirmation = () => {
 
         
         <div className="flex flex-col sm:flex-row gap-4">
-          <Link to="/" className="btn-secondary flex-1 text-center">
+          <Link to="/" className="btn-outline flex-1 text-center">
             Volver al Inicio
           </Link>
-          <Link to="/search-reservation" className="border-2 border-cafe-200 text-cafe-200 hover:bg-cafe-200 hover:text-white px-6 py-3 rounded-xl text-center transition">
+          <Link to="/search-reservation" className="btn-primary flex-1 text-center">
             Consultar mi reserva
           </Link>
         </div>

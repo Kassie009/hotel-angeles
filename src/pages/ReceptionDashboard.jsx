@@ -29,6 +29,7 @@ const ReceptionDashboard = () => {
         (async () => {
             await cargarReservas();
         })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filtro.estado]);
 
     const cambiarEstado = async (codigoReserva, nuevoEstado) => {

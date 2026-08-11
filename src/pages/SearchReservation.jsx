@@ -106,8 +106,8 @@ const SearchReservation = () => {
       <Breadcrumbs />
       
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold text-cafe-900 mb-3">Consultar Reserva</h1>
-        <p className="text-cafe-100 max-w-xl mx-auto">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">Consultar Reserva</h1>
+        <p className="text-gray-700 max-w-xl mx-auto">
           Ingresa el código de tu reserva para ver el estado de tu estancia
         </p>
       </div>
@@ -125,14 +125,14 @@ const SearchReservation = () => {
                 className="w-full px-4 py-3 border border-beige-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cafe-100 text-center md:text-left uppercase"
                 autoFocus
               />
-              <p className="text-xs text-cafe-50 mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 Ingresa el código que recibiste al hacer tu reserva
               </p>
             </div>
             <button
               type="submit"
-              disabled={loading}
-              className="bg-cafe-200 hover:bg-cafe-100 text-white px-8 py-3 rounded-xl flex items-center justify-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px]"
+disabled={loading}
+              className="btn-primary px-8 py-3 min-w-[140px] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Search size={20} />
               {loading ? 'Buscando...' : 'Consultar'}
@@ -150,7 +150,7 @@ const SearchReservation = () => {
 
       {reserva && (
         <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-          <h2 className="text-xl font-bold text-cafe-900 mb-6 flex items-center gap-2">
+          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
             <CheckCircle size={24} className="text-green-600" />
             Detalles de tu Reserva
           </h2>
@@ -170,7 +170,7 @@ const SearchReservation = () => {
                       'text-gray-600'
                     }`} />
                     <div>
-                      <p className="text-sm text-cafe-100">Estado actual</p>
+                      <p className="text-sm text-gray-700">Estado actual</p>
                       <p className={`font-bold ${estadoInfo.color} px-3 py-1 rounded-full inline-block`}>
                         {estadoInfo.label}
                       </p>
@@ -183,46 +183,46 @@ const SearchReservation = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-beige-50 rounded-xl p-4">
-              <p className="text-sm text-cafe-100">Código de reserva</p>
-              <p className="font-bold text-cafe-900 text-lg font-mono">{reserva.codigo}</p>
+              <p className="text-sm text-gray-700">Código de reserva</p>
+              <p className="font-bold text-gray-900 text-lg font-mono">{reserva.codigo}</p>
             </div>
             <div className="bg-beige-50 rounded-xl p-4">
-              <p className="text-sm text-cafe-100">Total a pagar</p>
-              <p className="font-bold text-cafe-900 text-lg">${Number(reserva.total).toFixed(2)}</p>
+              <p className="text-sm text-gray-700">Total a pagar</p>
+              <p className="font-bold text-gray-900 text-lg">${Number(reserva.total).toFixed(2)}</p>
             </div>
             <div className="bg-beige-50 rounded-xl p-4">
-              <p className="text-sm text-cafe-100">Check-in</p>
-              <p className="font-medium text-cafe-900">{formatearFecha(reserva.check_in || reserva.checkIn)}</p>
+              <p className="text-sm text-gray-700">Check-in</p>
+              <p className="font-medium text-gray-900">{formatearFecha(reserva.check_in || reserva.checkIn)}</p>
             </div>
             <div className="bg-beige-50 rounded-xl p-4">
-              <p className="text-sm text-cafe-100">Check-out</p>
-              <p className="font-medium text-cafe-900">{formatearFecha(reserva.check_out || reserva.checkOut)}</p>
+              <p className="text-sm text-gray-700">Check-out</p>
+              <p className="font-medium text-gray-900">{formatearFecha(reserva.check_out || reserva.checkOut)}</p>
             </div>
             <div className="bg-beige-50 rounded-xl p-4">
-              <p className="text-sm text-cafe-100">Habitación</p>
-              <p className="font-medium text-cafe-900">{reserva.habitacion}</p>
+              <p className="text-sm text-gray-700">Habitación</p>
+              <p className="font-medium text-gray-900">{reserva.habitacion}</p>
             </div>
             <div className="bg-beige-50 rounded-xl p-4">
-              <p className="text-sm text-cafe-100">Noches</p>
-              <p className="font-medium text-cafe-900">{reserva.noches}</p>
+              <p className="text-sm text-gray-700">Noches</p>
+              <p className="font-medium text-gray-900">{reserva.noches}</p>
             </div>
           </div>
 
           
           <div className="mt-6 bg-beige-50 rounded-xl p-4">
-            <p className="text-sm text-cafe-100 font-medium mb-3">Datos del cliente</p>
+            <p className="text-sm text-gray-700 font-medium mb-3">Datos del cliente</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="flex items-center gap-2">
-                <User size={16} className="text-cafe-100" />
-                <span className="text-cafe-900">{reserva.nombre}</span>
+                <User size={16} className="text-gray-700" />
+                <span className="text-gray-900">{reserva.nombre}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Mail size={16} className="text-cafe-100" />
-                <span className="text-cafe-900">{reserva.email}</span>
+                <Mail size={16} className="text-gray-700" />
+                <span className="text-gray-900">{reserva.email}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Phone size={16} className="text-cafe-100" />
-                <span className="text-cafe-900">{reserva.telefono}</span>
+                <Phone size={16} className="text-gray-700" />
+                <span className="text-gray-900">{reserva.telefono}</span>
               </div>
             </div>
           </div>
@@ -273,15 +273,15 @@ const SearchReservation = () => {
           )}
 
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
-            <Link 
+<Link 
               to="/rooms" 
-              className="bg-cafe-200 hover:bg-cafe-100 text-white px-6 py-3 rounded-xl text-center transition"
+              className="btn-primary px-6 py-2.5 text-center"
             >
               Ver más habitaciones
             </Link>
             <Link 
               to="/" 
-              className="border-2 border-cafe-200 text-cafe-200 hover:bg-cafe-200 hover:text-white px-6 py-3 rounded-xl text-center transition"
+              className="btn-outline px-6 py-2.5 text-center"
             >
               Volver al inicio
             </Link>

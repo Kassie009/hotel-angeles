@@ -9,7 +9,6 @@ const AdminDashboard = () => {
 
     const cargarEstadisticas = async () => {
         try {
-            setLoading(true);
             const response = await api.get('/dashboard/stats');
             setStats(response?.data?.data || null);
         } catch (error) {
@@ -21,6 +20,7 @@ const AdminDashboard = () => {
     };
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         cargarEstadisticas();
     }, []);
 

@@ -1,5 +1,5 @@
 const db = require('../Config/db');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const User = {
     findByEmail: async (email) => {

@@ -62,6 +62,7 @@ const AdminReservations = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, []);
 
@@ -192,7 +193,7 @@ const AdminReservations = () => {
           <Breadcrumbs />
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cafe-200 mx-auto" />
-            <p className="text-cafe-100 mt-4">Cargando reservas...</p>
+            <p className="text-gray-700 mt-4">Cargando reservas...</p>
           </div>
         </div>
       </div>
@@ -225,8 +226,8 @@ const AdminReservations = () => {
 
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-cafe-900">Gestión de Reservas</h1>
-            <p className="text-cafe-100">Administra las reservas del hotel</p>
+            <h1 className="text-3xl font-bold text-gray-900">Gestión de Reservas</h1>
+            <p className="text-gray-700">Administra las reservas del hotel</p>
           </div>
         </div>
 
@@ -235,16 +236,16 @@ const AdminReservations = () => {
             <div className="bg-white rounded-xl p-4 shadow-md">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-cafe-100">Total</p>
-                  <p className="text-2xl font-bold text-cafe-900">{stats.total}</p>
+                  <p className="text-sm text-gray-700">Total</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
                 </div>
-                <Users className="text-cafe-200" size={28} />
+                <Users className="text-blue-700" size={28} />
               </div>
             </div>
             <div className="bg-white rounded-xl p-4 shadow-md">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-cafe-100">Pendientes</p>
+                  <p className="text-sm text-gray-700">Pendientes</p>
                   <p className="text-2xl font-bold text-yellow-600">{stats.pendientes}</p>
                 </div>
                 <Calendar className="text-yellow-500" size={28} />
@@ -253,7 +254,7 @@ const AdminReservations = () => {
             <div className="bg-white rounded-xl p-4 shadow-md">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-cafe-100">Confirmadas</p>
+                  <p className="text-sm text-gray-700">Confirmadas</p>
                   <p className="text-2xl font-bold text-green-600">{stats.confirmadas}</p>
                 </div>
                 <CheckCircle className="text-green-500" size={28} />
@@ -262,10 +263,10 @@ const AdminReservations = () => {
             <div className="bg-white rounded-xl p-4 shadow-md">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-cafe-100">Ingresos</p>
-                  <p className="text-2xl font-bold text-cafe-900">${stats.ingresos.toFixed(2)}</p>
+                  <p className="text-sm text-gray-700">Ingresos</p>
+                  <p className="text-2xl font-bold text-gray-900">${stats.ingresos.toFixed(2)}</p>
                 </div>
-                <DollarSign className="text-cafe-200" size={28} />
+                <DollarSign className="text-blue-700" size={28} />
               </div>
             </div>
           </div>
@@ -274,7 +275,7 @@ const AdminReservations = () => {
         <div className="bg-white rounded-xl shadow-md p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cafe-50" size={18} />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
               <input
                 type="text"
                 placeholder="Buscar por código, cliente o email..."
@@ -292,7 +293,7 @@ const AdminReservations = () => {
                   className={`px-4 py-2 rounded-lg text-sm transition-colors ${
                     filter === status
                       ? 'bg-cafe-200 text-white'
-                      : 'bg-beige-50 text-cafe-100 hover:bg-beige-100'
+                      : 'bg-beige-50 text-gray-700 hover:bg-beige-100'
                   }`}
                 >
                   {status === 'all'
@@ -317,30 +318,30 @@ const AdminReservations = () => {
             <table className="w-full">
               <thead className="bg-beige-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Código</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Cliente</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Habitación</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Fechas</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Total</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Estado</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-cafe-900">Acciones</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Código</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Cliente</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Habitación</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Fechas</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Total</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Estado</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-beige-100">
                 {filteredReservations.map((reserva) => (
                   <tr key={reserva.id} className="hover:bg-beige-50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-cafe-900">{reserva.codigo}</td>
+                    <td className="px-6 py-4 font-medium text-gray-900">{reserva.codigo}</td>
                     <td className="px-6 py-4">
                       <div>
                         <p className="font-medium">{reserva.nombre}</p>
-                        <p className="text-sm text-cafe-100">{reserva.email}</p>
+                        <p className="text-sm text-gray-700">{reserva.email}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4">{reserva.habitacion || reserva.habitacion_nombre}</td>
                     <td className="px-6 py-4 text-sm">
                       <div>In: {reserva.check_in ? new Date(reserva.check_in).toLocaleDateString('es-MX') : 'N/A'}</div>
                       <div>Out: {reserva.check_out ? new Date(reserva.check_out).toLocaleDateString('es-MX') : 'N/A'}</div>
-                      <div className="text-xs text-cafe-50">{reserva.noches || 0} noches</div>
+                      <div className="text-xs text-gray-500">{reserva.noches || 0} noches</div>
                     </td>
                     <td className="px-6 py-4 font-bold">${(reserva.total || 0).toFixed(2)}</td>
                     <td className="px-6 py-4">{getStatusBadge(reserva.estado)}</td>
@@ -364,7 +365,7 @@ const AdminReservations = () => {
           </div>
 
           {filteredReservations.length === 0 && (
-            <div className="text-center py-12 text-cafe-100">
+            <div className="text-center py-12 text-gray-700">
               No hay reservas que coincidan con los filtros
             </div>
           )}

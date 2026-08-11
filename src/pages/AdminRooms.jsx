@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Wrench, Upload, X } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
-import api from '../Config/api';
+import api, { getMediaUrl } from '../Config/api';
 
 const TIPOS_HABITACION = [
   'Habitación Sencilla',
@@ -52,10 +52,6 @@ const AdminRooms = () => {
     imagen: null
   });
 
-  useEffect(() => {
-    cargarHabitaciones();
-  }, []);
-
   const cargarHabitaciones = async () => {
     try {
       setLoading(true);
@@ -82,6 +78,11 @@ const AdminRooms = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    cargarHabitaciones();
+  }, []);
 
   const validarFormulario = () => {
     if (!formData.nombre || formData.nombre.trim() === '') {
@@ -222,11 +223,7 @@ const AdminRooms = () => {
       
       console.log('Enviando FormData...');
       
-      const response = await api[method](url, formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      const response = await api[method](url, formDataToSend);
       
       if (response.data) {
         alert(editingRoom ? 'Habitación actualizada correctamente' : 'Habitación creada correctamente');
@@ -333,7 +330,7 @@ const AdminRooms = () => {
     
     // Si es una ruta de uploads (imagen subida)
     if (imagen.startsWith('/uploads/')) {
-      return `http://localhost:5000${imagen}`;
+      return getMediaUrl(imagen);
     }
     
     // Si es una URL completa
@@ -371,7 +368,7 @@ const AdminRooms = () => {
           <Breadcrumbs />
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cafe-200 mx-auto"></div>
-            <p className="text-cafe-100 mt-4">Cargando habitaciones...</p>
+            <p className="text-gray-700 mt-4">Cargando habitaciones...</p>
           </div>
         </div>
       </div>
@@ -404,12 +401,12 @@ const AdminRooms = () => {
         
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-cafe-900 mb-2">Gestión de Habitaciones</h1>
-            <p className="text-cafe-100">Administra las habitaciones del hotel</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Gestión de Habitaciones</h1>
+            <p className="text-gray-700">Administra las habitaciones del hotel</p>
           </div>
           <button
             onClick={() => { setEditingRoom(null); resetForm(); setShowModal(true); }}
-            className="bg-cafe-200 hover:bg-cafe-100 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all"
+className="bg-cafe-200 hover:bg-cafe-100 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 transition"
           >
             <Plus size={18} /> Nueva Habitación
           </button>
@@ -417,8 +414,8 @@ const AdminRooms = () => {
         
         {habitaciones.length === 0 ? (
           <div className="bg-white rounded-2xl p-12 text-center">
-            <p className="text-cafe-100 text-lg">No hay habitaciones registradas</p>
-            <p className="text-cafe-50 text-sm mt-2">Haz clic en "Nueva Habitación" para agregar una</p>
+            <p className="text-gray-700 text-lg">No hay habitaciones registradas</p>
+            <p className="text-gray-500 text-sm mt-2">Haz clic en "Nueva Habitación" para agregar una</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -435,22 +432,22 @@ const AdminRooms = () => {
                 <div className="p-4">
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <h3 className="text-xl font-bold text-cafe-900">{room.nombre}</h3>
+                      <h3 className="text-xl font-bold text-gray-900">{room.nombre}</h3>
                     </div>
                     {getTipoBadge(room.tipo)}
                   </div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-2xl font-bold text-cafe-900">${room.precio}</span>
-                    <span className="text-sm text-cafe-50">/ noche</span>
+                    <span className="text-2xl font-bold text-gray-900">${room.precio}</span>
+                    <span className="text-sm text-gray-500">/ noche</span>
                   </div>
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-sm text-cafe-100">Capacidad: {room.capacidad} personas</span>
+                    <span className="text-sm text-gray-700">Capacidad: {room.capacidad} personas</span>
                     {getEstadoBadge(room.estado)}
                   </div>
-                  <p className="text-cafe-100 text-sm mb-3 line-clamp-2">{room.descripcion}</p>
+                  <p className="text-gray-700 text-sm mb-3 line-clamp-2">{room.descripcion}</p>
                   <div className="flex flex-wrap gap-1 mb-3">
                     {room.amenities?.map((am, idx) => (
-                      <span key={idx} className="text-xs bg-beige-100 text-cafe-100 px-2 py-1 rounded-full">{am}</span>
+                      <span key={idx} className="text-xs bg-beige-100 text-gray-700 px-2 py-1 rounded-full">{am}</span>
                     ))}
                   </div>
                   <div className="flex gap-2 pt-2 border-t border-beige-100">
@@ -469,11 +466,11 @@ const AdminRooms = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold text-cafe-900 mb-4">{editingRoom ? 'Editar Habitación' : 'Nueva Habitación'}</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">{editingRoom ? 'Editar Habitación' : 'Nueva Habitación'}</h2>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-cafe-900 text-sm font-medium mb-1">Nombre *</label>
+                  <label className="block text-gray-900 text-sm font-medium mb-1">Nombre *</label>
                   <input 
                     type="text" 
                     name="nombre" 
@@ -486,7 +483,7 @@ const AdminRooms = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-cafe-900 text-sm font-medium mb-1">Tipo de Habitación *</label>
+                  <label className="block text-gray-900 text-sm font-medium mb-1">Tipo de Habitación *</label>
                   <select 
                     name="tipo" 
                     value={formData.tipo} 
@@ -500,7 +497,7 @@ const AdminRooms = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-cafe-900 text-sm font-medium mb-1">Precio por noche (MXN) *</label>
+                  <label className="block text-gray-900 text-sm font-medium mb-1">Precio por noche (MXN) *</label>
                   <input 
                     type="number" 
                     name="precio" 
@@ -512,11 +509,11 @@ const AdminRooms = () => {
                     className="w-full px-4 py-2 border border-beige-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cafe-100"
                     placeholder="Ej: 850"
                   />
-                  <p className="text-xs text-cafe-50 mt-1">Mínimo $500 - Máximo $5,000</p>
+                  <p className="text-xs text-gray-500 mt-1">Mínimo $500 - Máximo $5,000</p>
                 </div>
                 
                 <div>
-                  <label className="block text-cafe-900 text-sm font-medium mb-1">Capacidad (personas) *</label>
+                  <label className="block text-gray-900 text-sm font-medium mb-1">Capacidad (personas) *</label>
                   <input 
                     type="number" 
                     name="capacidad" 
@@ -528,11 +525,11 @@ const AdminRooms = () => {
                     className="w-full px-4 py-2 border border-beige-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cafe-100"
                     placeholder="Ej: 2"
                   />
-                  <p className="text-xs text-cafe-50 mt-1">Mínimo 1 - Máximo 7 personas</p>
+                  <p className="text-xs text-gray-500 mt-1">Mínimo 1 - Máximo 7 personas</p>
                 </div>
                 
                 <div>
-                  <label className="block text-cafe-900 text-sm font-medium mb-1">Estado</label>
+                  <label className="block text-gray-900 text-sm font-medium mb-1">Estado</label>
                   <select 
                     name="estado" 
                     value={formData.estado} 
@@ -549,7 +546,7 @@ const AdminRooms = () => {
               </div>
               
               <div className="mt-3">
-                <label className="block text-cafe-900 text-sm font-medium mb-1">Imagen de la habitación {!editingRoom && '*'}</label>
+                <label className="block text-gray-900 text-sm font-medium mb-1">Imagen de la habitación {!editingRoom && '*'}</label>
                 <div className="border-2 border-dashed border-beige-200 rounded-lg p-4 text-center">
                   {imagenPreview ? (
                     <div className="relative">
@@ -564,9 +561,9 @@ const AdminRooms = () => {
                     </div>
                   ) : (
                     <label className="cursor-pointer flex flex-col items-center gap-2">
-                      <Upload size={32} className="text-cafe-200" />
-                      <span className="text-sm text-cafe-100">Haz clic para subir una imagen</span>
-                      <span className="text-xs text-cafe-50">JPG, PNG, GIF, WEBP, BMP (max 2MB)</span>
+                      <Upload size={32} className="text-blue-700" />
+                      <span className="text-sm text-gray-700">Haz clic para subir una imagen</span>
+                      <span className="text-xs text-gray-500">JPG, PNG, GIF, WEBP, BMP (max 2MB)</span>
                       <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                     </label>
                   )}
@@ -574,7 +571,7 @@ const AdminRooms = () => {
               </div>
               
               <div className="mt-3">
-                <label className="block text-cafe-900 text-sm font-medium mb-1">Descripción *</label>
+                <label className="block text-gray-900 text-sm font-medium mb-1">Descripción *</label>
                 <textarea 
                   name="descripcion" 
                   value={formData.descripcion} 
@@ -584,11 +581,11 @@ const AdminRooms = () => {
                   placeholder="Describe la habitación (mínimo 10 caracteres)"
                   minLength={10}
                 />
-                <p className="text-xs text-cafe-50 mt-1">Mínimo 10 caracteres</p>
+                <p className="text-xs text-gray-500 mt-1">Mínimo 10 caracteres</p>
               </div>
               
               <div className="mt-3">
-                <label className="block text-cafe-900 text-sm font-medium mb-1">Amenities</label>
+                <label className="block text-gray-900 text-sm font-medium mb-1">Amenities</label>
                 <div className="flex flex-wrap gap-3">
                   {AMENITIES_DISPONIBLES.map(amenity => (
                     <label key={amenity} className="flex items-center gap-1 text-sm cursor-pointer">
@@ -610,7 +607,7 @@ const AdminRooms = () => {
                 <button 
                   type="button" 
                   onClick={() => { setShowModal(false); setEditingRoom(null); resetForm(); }} 
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-cafe-900 py-2 rounded-lg transition"
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 py-2 rounded-lg transition"
                 >
                   Cancelar
                 </button>

@@ -46,7 +46,7 @@ const AdminLogin = () => {
                 setAttempts(prev => prev + 1);
                 setError(result.message || 'Error al iniciar sesión');
             }
-        } catch (error) {
+        } catch {
             setAttempts(prev => prev + 1);
             setError('Error al iniciar sesión');
         } finally {
@@ -54,13 +54,19 @@ const AdminLogin = () => {
         }
     };
 
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cafe-900 to-cafe-700">
-            <div className="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full">
+return (
+        <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600">
+            {/* Efectos difuminados de fondo */}
+            <div className="absolute -top-20 -left-20 w-96 h-96 bg-blue-400 rounded-full blur-3xl opacity-40"></div>
+            <div className="absolute top-1/3 -right-24 w-[28rem] h-[28rem] bg-sky-400 rounded-full blur-3xl opacity-30"></div>
+            <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-indigo-500 rounded-full blur-3xl opacity-30"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-cyan-300 rounded-full blur-3xl opacity-20"></div>
+
+            <div className="relative bg-white/95 backdrop-blur-sm p-8 rounded-2xl shadow-2xl max-w-md w-full">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-cafe-900">Hotel Angeles</h1>
-                    <p className="text-cafe-100 mt-2">Panel Administrativo</p>
-                    <p className="text-xs text-cafe-50 mt-1">Acceso restringido al personal autorizado</p>
+                    <h1 className="text-3xl font-bold text-gray-900">Hotel Angeles</h1>
+                    <p className="text-gray-700 mt-2">Panel Administrativo</p>
+                    <p className="text-xs text-gray-500 mt-1">Acceso restringido al personal autorizado</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -100,7 +106,7 @@ const AdminLogin = () => {
                     <button
                         type="submit"
                         disabled={loading || attempts >= 5}
-                        className="w-full bg-cafe-200 hover:bg-cafe-100 text-white py-2 px-4 rounded-lg transition disabled:opacity-50"
+className="w-full bg-cafe-200 hover:bg-cafe-100 text-white py-2 px-4 rounded-lg transition disabled:opacity-50"
                     >
                         {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
                     </button>

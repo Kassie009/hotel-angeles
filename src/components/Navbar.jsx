@@ -1,49 +1,15 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { user, logout } = useAuth();
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const userData = sessionStorage.getItem('user');
-    if (userData) {
-      try {
-        setCurrentUser(JSON.parse(userData));
-      } catch (error) {
-        setCurrentUser(null);
-      }
-    } else {
-      setCurrentUser(null);
-    }
-    setLoading(false);
-  }, [user, location.pathname]);
+  const { user: currentUser, logout } = useAuth();
 
   const handleLogout = () => {
     logout();
     navigate('/', { replace: true });
   };
-
-  if (loading) {
-    return (
-      <nav className="bg-cafe-900 text-white shadow-md">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <Link to="/" className="text-2xl font-bold">Hotel Angeles</Link>
-            <div className="flex gap-4">
-              <div className="w-20 h-6 bg-beige-50/20 rounded animate-pulse"></div>
-              <div className="w-16 h-6 bg-beige-50/20 rounded animate-pulse"></div>
-            </div>
-          </div>
-        </div>
-      </nav>
-    );
-  }
 
   return (
     <nav className="bg-cafe-900 text-white shadow-md">

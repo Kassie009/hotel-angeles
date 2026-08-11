@@ -7,16 +7,18 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Tema blanco + azul rey (royal blue)
         beige: {
-          50: '#F5E6D3',
-          100: '#E8D5BD',
-          200: '#D7C4A8',
+          50: '#FFFFFF',   // blanco puro - fondo de página/tarjetas
+          100: '#EBF3FF',  // azul muy claro - tarjetas secundarias, breadcrumbs
+          200: '#BFD9F5',  // azul suave - bordes
         },
         cafe: {
-          50: '#8D6E63',
-          100: '#6D4C41',
-          200: '#4E342E',
-          900: '#3E2723',
+          50: '#A8C7EC',   // azul claro - texto/bordes sutiles
+          100: '#1D4ED8',  // azul (blue-700) - texto secundario, hover
+          200: '#4169E1',  // AZUL REY (royal blue) - botones principales
+          700: '#1D4ED8',  // azul (blue-700) - gradiente login
+          900: '#1E3A8A',  // azul oscuro (blue-900) - navbar, footer, títulos
         },
         exito: '#5D7B6F',
         error: '#C05A4B',

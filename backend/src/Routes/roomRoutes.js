@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const roomController = require('../Controllers/roomController');
-const { verificarToken, verificarRol } = require('../middleware/auth');
+const { verificarToken, verificarRol } = require('../Middleware/auth');
 const upload = require('../Config/multer');
 
 

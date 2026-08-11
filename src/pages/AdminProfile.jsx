@@ -65,39 +65,39 @@ const AdminProfile = () => {
     return (
         <div className="p-6 max-w-2xl mx-auto">
             <div className="mb-6">
-                <h1 className="text-2xl font-bold text-cafe-900">Mi Perfil</h1>
-                <p className="text-cafe-100">Gestiona tu información personal</p>
+                <h1 className="text-2xl font-bold text-gray-900">Mi Perfil</h1>
+                <p className="text-gray-700">Gestiona tu información personal</p>
             </div>
 
             <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-                <h2 className="text-lg font-bold text-cafe-900 mb-4">Información Personal</h2>
+                <h2 className="text-lg font-bold text-gray-900 mb-4">Información Personal</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-center gap-3 p-3 bg-beige-50 rounded-lg">
-                        <User size={20} className="text-cafe-200" />
+                        <User size={20} className="text-blue-700" />
                         <div>
-                            <p className="text-xs text-cafe-100">Nombre</p>
-                            <p className="font-medium text-cafe-900">{user?.nombre || 'N/A'}</p>
+                            <p className="text-xs text-gray-700">Nombre</p>
+                            <p className="font-medium text-gray-900">{user?.nombre || 'N/A'}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-3 bg-beige-50 rounded-lg">
-                        <Mail size={20} className="text-cafe-200" />
+                        <Mail size={20} className="text-blue-700" />
                         <div>
-                            <p className="text-xs text-cafe-100">Email</p>
-                            <p className="font-medium text-cafe-900">{user?.email || 'N/A'}</p>
+                            <p className="text-xs text-gray-700">Email</p>
+                            <p className="font-medium text-gray-900">{user?.email || 'N/A'}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-3 bg-beige-50 rounded-lg">
-                        <Shield size={20} className="text-cafe-200" />
+                        <Shield size={20} className="text-blue-700" />
                         <div>
-                            <p className="text-xs text-cafe-100">Rol</p>
-                            <p className="font-medium text-cafe-900">{getRolLabel(user?.rol)}</p>
+                            <p className="text-xs text-gray-700">Rol</p>
+                            <p className="font-medium text-gray-900">{getRolLabel(user?.rol)}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-md p-6">
-                <h2 className="text-lg font-bold text-cafe-900 mb-4 flex items-center gap-2">
+                <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <Key size={20} /> Cambiar Contraseña
                 </h2>
                 
@@ -158,7 +158,7 @@ const AdminProfile = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-cafe-200 hover:bg-cafe-100 text-white py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+className="w-full bg-cafe-200 hover:bg-cafe-100 text-white py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? 'Actualizando...' : 'Actualizar Contraseña'}
                     </button>

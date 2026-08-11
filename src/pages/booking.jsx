@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '../components/Breadcrumbs';
 import api from '../Config/api';  
-import { hotel } from '../config/hotel';
 import sencillaImg from '../assets/sencilla.jpg';
 import sencilla2Img from '../assets/sencilla2.jpg';
 import dobleImg from '../assets/doble.jpg';
@@ -174,7 +173,7 @@ const Booking = () => {
         <Breadcrumbs />
         <div className="text-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cafe-200 mx-auto"></div>
-          <p className="text-cafe-100 mt-4">Cargando habitación...</p>
+          <p className="text-gray-700 mt-4">Cargando habitación...</p>
         </div>
       </div>
     );
@@ -186,9 +185,9 @@ const Booking = () => {
         <Breadcrumbs />
         <div className="text-center py-20">
           <p className="text-red-600 text-lg">{error || 'Habitación no encontrada'}</p>
-          <button 
+<button 
             onClick={() => navigate('/rooms')}
-            className="mt-4 bg-cafe-200 hover:bg-cafe-100 text-white px-6 py-2 rounded-xl transition"
+            className="btn-primary mt-4 px-6 py-2"
           >
             Volver a habitaciones
           </button>
@@ -203,13 +202,13 @@ const Booking = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <Breadcrumbs />
-      <h1 className="text-3xl font-bold text-cafe-900 mb-6">Finalizar Reserva</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">Finalizar Reserva</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-white rounded-xl shadow-md p-6">
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-cafe-900 text-sm font-medium mb-1">Nombre Completo *</label>
+              <label className="block text-gray-900 text-sm font-medium mb-1">Nombre Completo *</label>
               <input
                 type="text"
                 name="nombre"
@@ -222,7 +221,7 @@ const Booking = () => {
             </div>
             
             <div className="mb-4">
-              <label className="block text-cafe-900 text-sm font-medium mb-1">Correo Electrónico *</label>
+              <label className="block text-gray-900 text-sm font-medium mb-1">Correo Electrónico *</label>
               <input
                 type="email"
                 name="email"
@@ -235,7 +234,7 @@ const Booking = () => {
             </div>
             
             <div className="mb-4">
-              <label className="block text-cafe-900 text-sm font-medium mb-1">Teléfono *</label>
+              <label className="block text-gray-900 text-sm font-medium mb-1">Teléfono *</label>
               <input
                 type="tel"
                 name="telefono"
@@ -249,7 +248,7 @@ const Booking = () => {
             
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-cafe-900 text-sm font-medium mb-1">Check-in *</label>
+                <label className="block text-gray-900 text-sm font-medium mb-1">Check-in *</label>
                 <input
                   type="date"
                   name="checkIn"
@@ -266,7 +265,7 @@ const Booking = () => {
                 />
               </div>
               <div>
-                <label className="block text-cafe-900 text-sm font-medium mb-1">Check-out *</label>
+                <label className="block text-gray-900 text-sm font-medium mb-1">Check-out *</label>
                 <input
                   type="date"
                   name="checkOut"
@@ -285,7 +284,7 @@ const Booking = () => {
             </div>
             
             <div className="mb-6">
-              <label className="block text-cafe-900 text-sm font-medium mb-1">Huéspedes</label>
+              <label className="block text-gray-900 text-sm font-medium mb-1">Huéspedes</label>
               <select
                 name="huespedes"
                 value={formData.huespedes}
@@ -298,10 +297,10 @@ const Booking = () => {
               </select>
             </div>
 
-            <button 
+<button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-cafe-200 hover:bg-cafe-100 text-white py-3 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Procesando...' : 'Confirmar Reserva'}
             </button>
@@ -309,7 +308,7 @@ const Booking = () => {
         </div>
 
         <div className="bg-beige-100 rounded-xl shadow-md p-6 h-fit sticky top-4">
-          <h2 className="text-xl font-bold text-cafe-900 mb-4">Resumen de Estancia</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Resumen de Estancia</h2>
           
           <div className="rounded-lg overflow-hidden mb-4">
             <img 
@@ -320,24 +319,24 @@ const Booking = () => {
           </div>
           
           <div className="border-b border-cafe-50 pb-4 mb-4">
-            <p className="font-semibold text-cafe-900 text-lg">{room.nombre}</p>
-            <p className="text-cafe-100 text-sm">Capacidad: {room.capacidad} personas</p>
+            <p className="font-semibold text-gray-900 text-lg">{room.nombre}</p>
+            <p className="text-gray-700 text-sm">Capacidad: {room.capacidad} personas</p>
           </div>
           
           <div className="space-y-2 mb-4">
             <div className="flex justify-between">
-              <span className="text-cafe-100">Precio por noche</span>
-              <span className="text-cafe-900 font-medium">${room.precio}</span>
+              <span className="text-gray-700">Precio por noche</span>
+              <span className="text-gray-900 font-medium">${room.precio}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-cafe-100">Noches</span>
-              <span className="text-cafe-900 font-medium">{noches}</span>
+              <span className="text-gray-700">Noches</span>
+              <span className="text-gray-900 font-medium">{noches}</span>
             </div>
             <div className="border-t pt-2 mt-2 flex justify-between font-bold">
-              <span className="text-cafe-900">TOTAL A PAGAR</span>
-              <span className="text-cafe-900 text-xl">${total.toFixed(2)}</span>
+              <span className="text-gray-900">TOTAL A PAGAR</span>
+              <span className="text-gray-900 text-xl">${total.toFixed(2)}</span>
             </div>
-            <p className="text-xs text-cafe-50 text-right">*Precio ya incluye IVA</p>
+            <p className="text-xs text-gray-500 text-right">*Precio ya incluye IVA</p>
           </div>
 
         </div>

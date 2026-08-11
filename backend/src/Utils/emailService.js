@@ -1,5 +1,5 @@
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+const nodemailer = require('nodemailer');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -9,14 +9,14 @@ const transporter = nodemailer.createTransport({
   secure: false,
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS.replace(/\s/g, '')
+    pass: (process.env.EMAIL_PASS || '').replace(/\s/g, '')
   },
   tls: {
     rejectUnauthorized: false
   }
 });
 
-export const sendConfirmationEmail = async ({ 
+const sendConfirmationEmail = async ({ 
   email, 
   nombre, 
   codigo, 
@@ -32,33 +32,45 @@ export const sendConfirmationEmail = async ({
       from: `"Hotel Angeles" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: `Reserva Confirmada - ${codigo}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #faf8f6;">
-          <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <h2 style="color: #5C4033; text-align: center; margin-bottom: 20px;">¡Reserva Confirmada!</h2>
-            <p style="font-size: 16px;">Hola <strong>${nombre}</strong>,</p>
-            <p style="font-size: 16px;">Tu reserva ha sido confirmada exitosamente. ¡Gracias por elegirnos!</p>
-            
-            <div style="background: #f5f0eb; padding: 20px; border-radius: 10px; margin: 25px 0;">
-              <h3 style="color: #5C4033; margin-top: 0;">Detalles de tu reserva</h3>
-              <p><strong>Código:</strong> <span style="color: #5C4033; font-weight: bold;">${codigo}</span></p>
-              <p><strong>Habitación:</strong> ${habitacion}</p>
-              <p><strong>Check-in:</strong> ${new Date(checkIn).toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-              <p><strong>Check-out:</strong> ${new Date(checkOut).toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-              <p><strong>Total pagado:</strong> <span style="font-size: 18px; font-weight: bold; color: #5C4033;">$${total.toFixed(2)}</span></p>
-            </div>
-            
-            <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border-left: 4px solid #4caf50;">
-              <p style="margin: 0; color: #2e7d32;">Pago confirmado. ¡Te esperamos en Hotel Angeles!</p>
-            </div>
-            
-            <hr style="border: none; border-top: 1px solid #eee; margin: 25px 0;" />
-            
-            <p style="font-size: 14px; color: #8B7355; text-align: center;">
-              Hotel Angeles - Su confortabilidad es nuestra prioridad<br>
-              <a href="${process.env.FRONTEND_URL}" style="color: #5C4033;">${process.env.FRONTEND_URL}</a>
+html: `
+        <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+          <div style="background: #1E3A8A; padding: 28px 32px; text-align: center;">
+            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">Hotel Angeles</h1>
+            <p style="margin: 6px 0 0; color: #BFDBFE; font-size: 13px;">Su confortabilidad es nuestra prioridad</p>
+          </div>
+
+          <div style="padding: 32px;">
+            <h2 style="color: #1E3A8A; margin: 0 0 16px; font-size: 20px;">¡Reserva Confirmada!</h2>
+            <p style="font-size: 15px; color: #333; line-height: 1.6; margin: 0 0 8px;">Hola <strong>${nombre}</strong>,</p>
+            <p style="font-size: 15px; color: #333; line-height: 1.6; margin: 0 0 24px;">Tu reserva ha sido confirmada exitosamente. ¡Gracias por elegirnos!</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; background: #F8FAFF; border: 1px solid #EFF6FF;">
+              <tr><td style="padding: 14px 16px; border-bottom: 1px solid #EFF6FF; font-size: 13px; color: #666; width: 40%;">Código</td><td style="padding: 14px 16px; border-bottom: 1px solid #EFF6FF; font-size: 14px; color: #1E3A8A; font-weight: 600;">${codigo}</td></tr>
+              <tr><td style="padding: 14px 16px; border-bottom: 1px solid #EFF6FF; font-size: 13px; color: #666;">Habitación</td><td style="padding: 14px 16px; border-bottom: 1px solid #EFF6FF; font-size: 14px; color: #333;">${habitacion}</td></tr>
+              <tr><td style="padding: 14px 16px; border-bottom: 1px solid #EFF6FF; font-size: 13px; color: #666;">Check-in</td><td style="padding: 14px 16px; border-bottom: 1px solid #EFF6FF; font-size: 14px; color: #333;">${new Date(checkIn).toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td></tr>
+              <tr><td style="padding: 14px 16px; border-bottom: 1px solid #EFF6FF; font-size: 13px; color: #666;">Check-out</td><td style="padding: 14px 16px; border-bottom: 1px solid #EFF6FF; font-size: 14px; color: #333;">${new Date(checkOut).toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td></tr>
+              <tr><td style="padding: 14px 16px; font-size: 13px; color: #666;">Total pagado</td><td style="padding: 14px 16px; font-size: 16px; color: #4169E1; font-weight: 700;">$${total.toFixed(2)}</td></tr>
+            </table>
+
+            <p style="font-size: 14px; color: #333; line-height: 1.6; margin: 0 0 28px;">Pago confirmado. ¡Te esperamos en Hotel Angeles!</p>
+
+            <hr style="border: none; border-top: 1px solid #EFF6FF; margin: 24px 0;" />
+
+            <p style="font-size: 14px; color: #333; line-height: 1.6; margin: 0 0 4px;"><strong>¿Necesitas cancelar tu reserva?</strong></p>
+            <p style="font-size: 14px; color: #555; line-height: 1.6; margin: 0 0 20px;">Por favor llama al <a href="tel:+526535183169" style="color: #4169E1;">+52 653-518-3169</a> o <a href="tel:+526531874865" style="color: #4169E1;">+52 653-187-4865</a>.</p>
+
+            <p style="font-size: 14px; color: #333; line-height: 1.6; margin: 0 0 4px;"><strong>¿Requieres factura?</strong></p>
+            <p style="font-size: 14px; color: #555; line-height: 1.6; margin: 0 0 28px;">Envía tus datos fiscales a <a href="mailto:hotelangeles_21@hotmail.com" style="color: #4169E1;">reservas.hotelangeles@gmail.com</a> para generarla.</p>
+
+            <hr style="border: none; border-top: 1px solid #EFF6FF; margin: 24px 0;" />
+
+            <p style="font-size: 13px; color: #888; text-align: center; line-height: 1.6; margin: 0;">
+              Este es un correo automático, por favor no responder.
             </p>
-            <p style="font-size: 12px; color: #999; text-align: center;">Este es un correo automático, por favor no responder.</p>
+          </div>
+
+          <div style="background: #EFF6FF; padding: 16px; text-align: center;">
+            <p style="margin: 0; font-size: 12px; color: #1E3A8A;">Hotel Angeles &copy; ${new Date().getFullYear()}</p>
           </div>
         </div>
       `
@@ -73,3 +85,5 @@ export const sendConfirmationEmail = async ({
     return null;
   }
 };
+
+module.exports = { sendConfirmationEmail };

@@ -32,18 +32,20 @@ const allowedOrigins = [
     'http://localhost:3000'
 ];
 
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
+app.use((req, res, next) => {
+    cors({
+        origin: function (origin, callback) {
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.indexOf(origin) !== -1) return callback(null, true);
+            if (origin === `http://${req.headers.host}` || origin === `https://${req.headers.host}`) {
+                return callback(null, true);
+            }
             callback(new Error('Origen no permitido'));
-        }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-}));
+        },
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+    })(req, res, next);
+});
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -51,7 +53,7 @@ app.use(cookieParser());
 app.use(sanitizeInput);
 
 app.use('/uploads', (req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+    res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'http://localhost:5173');
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Cross-Origin-Resource-Policy', 'cross-origin');
     next();
@@ -75,6 +77,14 @@ app.use('/api/users', userRoutes);
 
 const dashboardRoutes = require('./Routes/dashboardRoutes');
 app.use('/api/dashboard', dashboardRoutes);
+
+const DIST_DIR = path.join(__dirname, '../../dist');
+app.use(express.static(DIST_DIR));
+
+app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(DIST_DIR, 'index.html'));
+});
 
 app.use((req, res) => {
     res.status(404).json({ error: 'Ruta no encontrada' });

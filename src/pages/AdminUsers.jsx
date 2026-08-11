@@ -44,6 +44,7 @@ const AdminUsers = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     cargarUsuarios();
   }, []);
 
@@ -138,7 +139,7 @@ const AdminUsers = () => {
           <Breadcrumbs />
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cafe-200 mx-auto"></div>
-            <p className="text-cafe-100 mt-4">Cargando usuarios...</p>
+            <p className="text-gray-700 mt-4">Cargando usuarios...</p>
           </div>
         </div>
       </div>
@@ -171,12 +172,12 @@ const AdminUsers = () => {
         
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-cafe-900 mb-2">Gestión de Usuarios</h1>
-            <p className="text-cafe-100">Administra las cuentas del sistema</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Gestión de Usuarios</h1>
+            <p className="text-gray-700">Administra las cuentas del sistema</p>
           </div>
           <button
             onClick={() => { setEditingUser(null); setFormData({ nombre: '', email: '', password: '', rol: 'recepcion', activo: true }); setShowModal(true); }}
-            className="bg-cafe-200 hover:bg-cafe-100 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all"
+className="bg-cafe-200 hover:bg-cafe-100 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 transition"
           >
             <UserPlus size={18} /> Nuevo Usuario
           </button>
@@ -196,12 +197,12 @@ const AdminUsers = () => {
               </thead>
               <tbody>
                 {users.length === 0 ? (
-                  <tr><td colSpan="5" className="text-center py-8 text-cafe-100">No hay usuarios registrados</td></tr>
+                  <tr><td colSpan="5" className="text-center py-8 text-gray-700">No hay usuarios registrados</td></tr>
                 ) : (
                   users.map(user => (
                     <tr key={user.id} className="border-b border-beige-100 hover:bg-beige-50 transition-colors">
-                      <td className="px-4 py-3 font-medium text-cafe-900">{user.nombre}</td>
-                      <td className="px-4 py-3 text-cafe-100">{user.email}</td>
+                      <td className="px-4 py-3 font-medium text-gray-900">{user.nombre}</td>
+                      <td className="px-4 py-3 text-gray-700">{user.email}</td>
                       <td className="px-4 py-3">{getRoleBadge(user.rol)}</td>
                       <td className="px-4 py-3">
                         {(() => {
@@ -215,8 +216,8 @@ const AdminUsers = () => {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex gap-2">
-                          <button onClick={() => handleEdit(user)} className="text-cafe-100 hover:text-cafe-200 transition-colors" title="Editar"><Edit size={18} /></button>
-                          <button onClick={() => resetPassword(user)} className="text-cafe-100 hover:text-cafe-200 transition-colors" title="Restablecer contraseña"><RefreshCw size={18} /></button>
+                          <button onClick={() => handleEdit(user)} className="text-gray-700 hover:text-blue-700 transition-colors" title="Editar"><Edit size={18} /></button>
+                          <button onClick={() => resetPassword(user)} className="text-gray-700 hover:text-blue-700 transition-colors" title="Restablecer contraseña"><RefreshCw size={18} /></button>
                           <button onClick={() => toggleUserStatus(user)} className={`transition-colors ${user.activo !== false ? 'text-yellow-500 hover:text-yellow-600' : 'text-green-500 hover:text-green-600'}`} title={user.activo !== false ? 'Desactivar' : 'Activar'}>{user.activo !== false ? <XCircle size={18} /> : <CheckCircle size={18} />}</button>
                           <button onClick={() => handleDelete(user)} className="text-red-500 hover:text-red-600 transition-colors" title="Eliminar"><Trash2 size={18} /></button>
                         </div>
@@ -234,14 +235,14 @@ const AdminUsers = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
-            <h2 className="text-xl font-bold text-cafe-900 mb-4">{editingUser ? 'Editar Usuario' : 'Nuevo Usuario'}</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">{editingUser ? 'Editar Usuario' : 'Nuevo Usuario'}</h2>
             <form onSubmit={handleSubmit}>
-              <div className="mb-3"><label className="block text-cafe-900 text-sm font-medium mb-1">Nombre Completo</label><input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required className="w-full px-4 py-2 border border-beige-200 rounded-xl" /></div>
-              <div className="mb-3"><label className="block text-cafe-900 text-sm font-medium mb-1">Correo Electrónico</label><input type="email" name="email" value={formData.email} onChange={handleChange} required className="w-full px-4 py-2 border border-beige-200 rounded-xl" /></div>
-              <div className="mb-3"><label className="block text-cafe-900 text-sm font-medium mb-1">{editingUser ? 'Nueva Contraseña (dejar vacío para mantener)' : 'Contraseña'}</label><input type="password" name="password" value={formData.password} onChange={handleChange} className="w-full px-4 py-2 border border-beige-200 rounded-xl" placeholder={editingUser ? 'Dejar vacío para mantener' : '123456'} /></div>
-              <div className="mb-3"><label className="block text-cafe-900 text-sm font-medium mb-1">Rol</label><select name="rol" value={formData.rol} onChange={handleChange} className="w-full px-4 py-2 border border-beige-200 rounded-xl"><option value="recepcion">Recepcionista</option><option value="admin">Administrador</option></select></div>
-              <div className="mb-4 flex items-center gap-2"><input type="checkbox" checked={formData.activo} onChange={(e) => setFormData({ ...formData, activo: e.target.checked })} className="w-4 h-4" /><label className="text-cafe-900 text-sm">Usuario activo</label></div>
-              <div className="flex gap-3"><button type="button" onClick={() => { setShowModal(false); setEditingUser(null); }} className="flex-1 bg-gray-200 hover:bg-gray-300 text-cafe-900 py-2 rounded-lg">Cancelar</button><button type="submit" className="flex-1 bg-cafe-200 hover:bg-cafe-100 text-white py-2 rounded-lg">{editingUser ? 'Guardar Cambios' : 'Crear Usuario'}</button></div>
+              <div className="mb-3"><label className="block text-gray-900 text-sm font-medium mb-1">Nombre Completo</label><input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required className="w-full px-4 py-2 border border-beige-200 rounded-xl" /></div>
+              <div className="mb-3"><label className="block text-gray-900 text-sm font-medium mb-1">Correo Electrónico</label><input type="email" name="email" value={formData.email} onChange={handleChange} required className="w-full px-4 py-2 border border-beige-200 rounded-xl" /></div>
+              <div className="mb-3"><label className="block text-gray-900 text-sm font-medium mb-1">{editingUser ? 'Nueva Contraseña (dejar vacío para mantener)' : 'Contraseña'}</label><input type="password" name="password" value={formData.password} onChange={handleChange} className="w-full px-4 py-2 border border-beige-200 rounded-xl" placeholder={editingUser ? 'Dejar vacío para mantener' : '123456'} /></div>
+              <div className="mb-3"><label className="block text-gray-900 text-sm font-medium mb-1">Rol</label><select name="rol" value={formData.rol} onChange={handleChange} className="w-full px-4 py-2 border border-beige-200 rounded-xl"><option value="recepcion">Recepcionista</option><option value="admin">Administrador</option></select></div>
+              <div className="mb-4 flex items-center gap-2"><input type="checkbox" checked={formData.activo} onChange={(e) => setFormData({ ...formData, activo: e.target.checked })} className="w-4 h-4" /><label className="text-gray-900 text-sm">Usuario activo</label></div>
+              <div className="flex gap-3"><button type="button" onClick={() => { setShowModal(false); setEditingUser(null); }} className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 py-2 rounded-lg">Cancelar</button><button type="submit" className="flex-1 bg-cafe-200 hover:bg-cafe-100 text-white py-2 rounded-lg">{editingUser ? 'Guardar Cambios' : 'Crear Usuario'}</button></div>
             </form>
           </div>
         </div>
