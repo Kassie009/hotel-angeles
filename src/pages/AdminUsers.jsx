@@ -20,9 +20,9 @@ const AdminUsers = () => {
   const cargarUsuarios = async () => {
     try {
       setLoading(true);
-      console.log('Cargando usuarios...');
+      
       const response = await api.get('/users');
-      console.log('Respuesta:', response.data);
+      
       
       let usuariosData = [];
       if (Array.isArray(response.data)) {
@@ -35,8 +35,8 @@ const AdminUsers = () => {
       
       setUsers(usuariosData);
       setError(null);
-    } catch (error) {
-      console.error('Error al cargar usuarios:', error);
+    } catch {
+      
       setError('Error al cargar los usuarios');
     } finally {
       setLoading(false);
@@ -69,7 +69,7 @@ const AdminUsers = () => {
       setEditingUser(null);
       setFormData({ nombre: '', email: '', password: '', rol: 'recepcion', activo: true });
     } catch (error) {
-      console.error('Error al guardar usuario:', error);
+      
       alert(error.response?.data?.error || 'Error al guardar el usuario');
     }
   };
@@ -92,8 +92,8 @@ const AdminUsers = () => {
         await api.delete(`/users/${user.id}`);
         alert('Usuario eliminado');
         cargarUsuarios();
-      } catch (error) {
-        console.error('Error al eliminar:', error);
+      } catch {
+        
         alert('Error al eliminar el usuario');
       }
     }
@@ -104,8 +104,8 @@ const AdminUsers = () => {
       await api.put(`/users/${user.id}`, { ...user, activo: !user.activo });
       alert(`Usuario ${user.activo ? 'desactivado' : 'activado'}`);
       cargarUsuarios();
-    } catch (error) {
-      console.error('Error al cambiar estado:', error);
+    } catch {
+      
       alert('Error al cambiar estado');
     }
   };
@@ -116,8 +116,8 @@ const AdminUsers = () => {
         await api.put(`/users/${user.id}`, { ...user, password: '123456' });
         alert('Contraseña restablecida a: 123456');
         cargarUsuarios();
-      } catch (error) {
-        console.error('Error al restablecer contraseña:', error);
+      } catch {
+        
         alert('Error al restablecer contraseña');
       }
     }

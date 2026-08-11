@@ -98,11 +98,11 @@ const Rooms = () => {
       try {
         setLoading(true);
 
-        console.log('Cargando habitaciones...');
+        
 
         const response = await api.get('/rooms');
 
-        console.log('Respuesta:', response.data);
+        
 
         let habitacionesData = [];
 
@@ -118,11 +118,8 @@ const Rooms = () => {
         }
 
         setHabitaciones(habitacionesData);
-      } catch (error) {
-        console.error(
-          'Error al cargar habitaciones:',
-          error
-        );
+      } catch {
+        
       } finally {
         setLoading(false);
       }

@@ -55,9 +55,9 @@ const AdminRooms = () => {
   const cargarHabitaciones = async () => {
     try {
       setLoading(true);
-      console.log('Cargando habitaciones...');
+      
       const response = await api.get('/rooms');
-      console.log('Respuesta:', response.data);
+      
       
       let habitacionesData = [];
       if (Array.isArray(response.data)) {
@@ -65,14 +65,14 @@ const AdminRooms = () => {
       } else if (response.data?.data && Array.isArray(response.data.data)) {
         habitacionesData = response.data.data;
       } else {
-        console.warn('Formato no reconocido:', response.data);
+        
         habitacionesData = [];
       }
       
       setHabitaciones(habitacionesData);
       setError(null);
-    } catch (error) {
-      console.error('Error al cargar habitaciones:', error);
+    } catch {
+      
       setError('Error al cargar las habitaciones');
     } finally {
       setLoading(false);
@@ -221,7 +221,7 @@ const AdminRooms = () => {
         formDataToSend.append('imagen', formData.imagen);
       }
       
-      console.log('Enviando FormData...');
+      
       
       const response = await api[method](url, formDataToSend);
       
@@ -233,7 +233,7 @@ const AdminRooms = () => {
         resetForm();
       }
     } catch (error) {
-      console.error('Error al guardar habitación:', error);
+      
       alert(error.response?.data?.error || 'Error al guardar la habitación');
     }
   };
@@ -274,8 +274,8 @@ const AdminRooms = () => {
         await api.delete(`/rooms/${room.id}`);
         alert('Habitación eliminada');
         cargarHabitaciones();
-      } catch (error) {
-        console.error('Error al eliminar:', error);
+      } catch {
+        
         alert('Error al eliminar la habitación');
       }
     }
@@ -287,8 +287,8 @@ const AdminRooms = () => {
       await api.put(`/rooms/${room.id}/status`, { estado: nuevoEstado });
       alert(`Habitación ${nuevoEstado === 'mantenimiento' ? 'bloqueada por mantenimiento' : 'disponible nuevamente'}`);
       cargarHabitaciones();
-    } catch (error) {
-      console.error('Error al cambiar estado:', error);
+    } catch {
+      
       alert('Error de conexión');
     }
   };

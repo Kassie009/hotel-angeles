@@ -11,8 +11,8 @@ const AdminDashboard = () => {
         try {
             const response = await api.get('/dashboard/stats');
             setStats(response?.data?.data || null);
-        } catch (error) {
-            console.error('Error cargando estadísticas:', error);
+        } catch {
+            
             setStats(null);
         } finally {
             setLoading(false);

@@ -18,8 +18,8 @@ const ReceptionDashboard = () => {
             const response = await api.get(`/reservations?${params}`);
             const payload = response.data?.data || response.data;
             setReservas(Array.isArray(payload) ? payload : []);
-        } catch (error) {
-            console.error('Error cargando reservas (estado/busqueda):', error);
+        } catch {
+            
         } finally {
             setLoading(false);
         }
@@ -75,8 +75,8 @@ const ReceptionDashboard = () => {
 
             alert('Estado actualizado exitosamente');
             await cargarReservas();
-        } catch (error) {
-            console.error('Error al actualizar estado:', error?.response?.data || error);
+        } catch {
+            
             alert('Error al actualizar estado');
         }
     };

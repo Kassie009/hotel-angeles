@@ -21,10 +21,10 @@ const AdminFinance = () => {
 
   const cargarDatos = async () => {
     try {
-      console.log('Cargando datos financieros...');
+      
 
       const response = await api.get('/reservations');
-      console.log('Reservas:', response.data);
+      
 
       let reservasData = [];
       if (Array.isArray(response.data)) {
@@ -86,8 +86,8 @@ const AdminFinance = () => {
       });
 
       setError(null);
-    } catch (error) {
-      console.error('Error al cargar datos:', error);
+    } catch {
+      
       setError('Error al cargar los datos financieros');
     } finally {
       setLoading(false);

@@ -52,17 +52,17 @@ const SearchReservation = () => {
 
     
       try {
-        console.log('Buscando reserva por código:', normalized);
+        
         const response = await api.get(`/reservations/${encodeURIComponent(normalized)}`);
         setReserva(response.data);
         setError(null);
         return;
-      } catch (innerError) {
+      } catch {
      
-        console.log('No fue por código, intentando por nombre...', innerError?.response?.data || '');
+        
       }
 
-      console.log('Buscando reserva por nombre del huésped:', normalized);
+      
       const responseByName = await api.get(`/reservations/search`, { params: { nombre: normalized } });
 
       const payload = responseByName.data;
@@ -74,7 +74,7 @@ const SearchReservation = () => {
       }
       setError(null);
     } catch (error) {
-      console.error('Error al buscar reserva:', error);
+      
 
       let errorMessage = 'Error al buscar la reserva';
       if (error.response) {

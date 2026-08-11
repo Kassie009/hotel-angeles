@@ -48,9 +48,9 @@ const Home = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        console.log('Home - Cargando habitaciones...');
+        
         const response = await api.get('/rooms');  
-        console.log('Home - Respuesta:', response.data);
+        
         
         let habitacionesData = [];
         if (Array.isArray(response.data)) {
@@ -63,8 +63,8 @@ const Home = () => {
         
         const filtradas = habitacionesData.filter(r => r.estado !== 'mantenimiento');
         setDestacadas(filtradas.slice(0, 3));
-      } catch (error) {
-        console.error('Home - Error al cargar habitaciones:', error);
+      } catch {
+        
       } finally {
         setLoading(false);
       }

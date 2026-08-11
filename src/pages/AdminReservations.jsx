@@ -16,9 +16,9 @@ const AdminReservations = () => {
       setLoading(true);
       setError(null);
 
-      console.log('Cargando reservas...');
+      
       const response = await api.get('/reservations');
-      console.log('Respuesta:', response?.data);
+      
 
       const raw = response?.data;
       const reservasData = Array.isArray(raw)
@@ -53,7 +53,7 @@ const AdminReservations = () => {
 
       setStats({ total, pendientes, confirmadas, ingresos });
     } catch (err) {
-      console.error('Error al cargar reservas:', err);
+      
       const msg = err?.response?.data?.error || err?.response?.data?.message || err?.message || 'Error al cargar las reservas';
       setError(msg);
     } finally {
@@ -88,7 +88,7 @@ const AdminReservations = () => {
       alert('Reserva confirmada');
       await fetchData();
     } catch (err) {
-      console.error('Error confirmando reserva:', err);
+      
       alert(err?.response?.data?.error || 'Error al confirmar la reserva');
     }
   };
@@ -100,7 +100,7 @@ const AdminReservations = () => {
       alert('Reserva cancelada');
       await fetchData();
     } catch (err) {
-      console.error('Error cancelando reserva:', err);
+      
       alert(err?.response?.data?.error || 'Error al cancelar la reserva');
     }
   };
@@ -112,7 +112,7 @@ const AdminReservations = () => {
       alert('Check-in registrado');
       await fetchData();
     } catch (err) {
-      console.error('Error check-in:', err);
+      
       alert(err?.response?.data?.error || 'Error al registrar check-in');
     }
   };
@@ -124,7 +124,7 @@ const AdminReservations = () => {
       alert('Check-out registrado');
       await fetchData();
     } catch (err) {
-      console.error('Error check-out:', err);
+      
       alert(err?.response?.data?.error || 'Error al registrar check-out');
     }
   };

@@ -15,10 +15,10 @@ const Confirmation = () => {
   useEffect(() => {
     const fetchReserva = async () => {
       try {
-        console.log('Buscando reserva con código:', codigo);
+        
         
         if (!codigo) {
-          console.log('No hay código de reserva');
+          
           setError(true);
           setLoading(false);
           return;
@@ -27,26 +27,26 @@ const Confirmation = () => {
         if (storedReserva) {
           try {
             const parsed = JSON.parse(storedReserva);
-            console.log('Reserva encontrada en sessionStorage:', parsed);
+            
             setReserva(parsed);
             setLoading(false);
             return;
-          } catch (e) {
-            console.warn('Error parsing sessionStorage:', e);
+          } catch {
+            
           }
         }
 
-        console.log('Buscando en el backend...');
+        
         const response = await api.get(`/reservations/${codigo}`);
-        console.log('Respuesta del backend:', response.data);
+        
         
         setReserva(response.data);
         setError(false);
       } catch (error) {
-        console.error('Error al cargar la reserva:', error);
+        
         
         if (error.response) {
-          console.log('Error response:', error.response.data);
+          
           if (error.response.status === 404) {
             setError(true);
           }

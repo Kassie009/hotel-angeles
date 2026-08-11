@@ -44,10 +44,10 @@ const Booking = () => {
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        console.log('Cargando habitación ID:', id);
+        
         const response = await api.get(`/rooms/${id}`);
-        console.log('Respuesta completa:', response);
-        console.log('Datos:', response.data);
+        
+        
  
         let roomData;
         if (response.data?.data) {
@@ -55,14 +55,14 @@ const Booking = () => {
         } else if (response.data?.id) {
           roomData = response.data;
         } else {
-          console.warn('Formato no reconocido:', response.data);
+          
           throw new Error('Formato de respuesta no reconocido');
         }
         
-        console.log('Habitación cargada:', roomData);
+        
         setRoom(roomData);
-      } catch (error) {
-        console.error('Error cargando habitación:', error);
+      } catch {
+        
         setError('Error al cargar la habitación');
       } finally {
         setLoading(false);
@@ -143,20 +143,20 @@ const Booking = () => {
 
     try {
       setLoading(true);
-      console.log('Enviando reserva:', reserva);
+      
       
       const response = await api.post('/reservations', reserva);
-      console.log('Respuesta del servidor:', response.data);
+      
 
       sessionStorage.setItem('lastReservation', JSON.stringify(response.data));
       navigate(`/confirmation/${response.data.codigo}`);
       
     } catch (error) {
-      console.error('Error al crear reserva:', error);
+      
       
       let errorMessage = 'Error al crear la reserva';
       if (error.response) {
-        console.log('Error response:', error.response.data);
+        
         errorMessage = error.response.data?.error || error.response.data?.message || errorMessage;
       } else if (error.message) {
         errorMessage = error.message;
