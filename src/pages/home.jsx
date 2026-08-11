@@ -15,6 +15,7 @@ import estacionamientoImg from '../assets/estacionamiento.jpg';
 import barraImg from '../assets/barra1.png';
 import camaraImg from '../assets/camara.jpg';
 import tvImg from '../assets/tv.jpg';
+import wifiImg from '../assets/wifi.jpg';
 import recepcionImg from '../assets/recepcion.png';
 
 const imageMap = {
@@ -98,7 +99,7 @@ const Home = () => {
     {
       nombre: 'WiFi Alta Velocidad',
       descripcion: 'Conexión de fibra óptica en todo el hotel',
-      imagen: 'https://img.freepik.com/premium-photo/person-using-laptop-coffee-shop-connected-internet-via-public-wifi-illustrating-flexibility-wireless-communication_1229213-46202.jpg'
+      imagen: wifiImg
     },
     {
       nombre: 'Cámaras de vigilancia',
