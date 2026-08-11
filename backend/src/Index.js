@@ -1,4 +1,5 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -6,7 +7,6 @@ const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const { sanitizeInput } = require('./Middleware/Security');
 const db = require('./Config/db');
-const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
