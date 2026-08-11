@@ -61,7 +61,7 @@ const Privacy = () => {
                 <li><strong>Cancelar</strong> sus datos (sujeto a políticas de cancelación)</li>
                 <li><strong>Oponerse</strong> al uso de sus datos para fines específicos</li>
               </ul>
-              <p className="mt-2">Para ejercer sus derechos ARCO, envíe una solicitud a <strong>hotelangeles@hotmail.com</strong></p>
+              <p className="mt-2">Para ejercer sus derechos ARCO, envíe una solicitud a <strong>hotelangeles_21@hotmail.com</strong></p>
             </div>
             
             <div>
