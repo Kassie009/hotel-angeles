@@ -345,7 +345,7 @@ const Booking = () => {
           <div className="space-y-2 mb-4">
             <div className="flex justify-between">
               <span className="text-gray-700">Precio por noche</span>
-              <span className="text-gray-900 font-medium">${room.precio}</span>
+              <span className="text-gray-900 font-medium">${Number(room.precio).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-700">Noches</span>
@@ -355,7 +355,7 @@ const Booking = () => {
               <>
                 <div className="flex justify-between">
                   <span className="text-gray-700">Subtotal</span>
-                  <span className="text-gray-900 font-medium">${subtotal.toFixed(2)}</span>
+                  <span className="text-gray-900 font-medium">${subtotal.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
                 <div className="flex justify-between text-green-600">
                   <span className="font-medium">Descuento estancia larga</span>
@@ -365,7 +365,7 @@ const Booking = () => {
             )}
             <div className="border-t pt-2 mt-2 flex justify-between font-bold">
               <span className="text-gray-900">TOTAL A PAGAR</span>
-              <span className="text-gray-900 text-xl">${total.toFixed(2)}</span>
+              <span className="text-gray-900 text-xl">${total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
             <p className="text-xs text-gray-500 text-right">*Precio ya incluye IVA</p>
           </div>
