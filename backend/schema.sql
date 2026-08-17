@@ -27,6 +27,8 @@ CREATE TABLE `reservations` (
   `noches` int NOT NULL,
   `subtotal` decimal(10,2) DEFAULT NULL,
   `iva` decimal(10,2) DEFAULT NULL,
+  `descuento` decimal(10,2) DEFAULT 0,
+  `reembolso` decimal(10,2) DEFAULT 0,
   `total` decimal(10,2) NOT NULL,
   `estado` enum('pendiente','confirmada','checkin_realizado','checkout_realizado','cancelada') DEFAULT 'pendiente',
   `fecha_reserva` timestamp NULL DEFAULT CURRENT_TIMESTAMP,

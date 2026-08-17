@@ -95,6 +95,24 @@ const reservationController = {
         return res.status(404).json({ error: 'Reserva no encontrada' });
       }
 
+      if (estado === 'cancelada') {
+        const now = new Date();
+        const checkIn = new Date(reserva.check_in);
+        const horasAntes = (checkIn - now) / (1000 * 60 * 60);
+        let reembolso = 0;
+
+        if (horasAntes >= 48) {
+          reembolso = Number(reserva.total);
+        } else if (horasAntes > 24) {
+          reembolso = Number(reserva.total) * 0.5;
+        }
+
+        await pool.query(
+          'UPDATE reservations SET reembolso = ? WHERE codigo = ?',
+          [reembolso, codigo]
+        );
+      }
+
       const updated = await Reservation.updateStatus(codigo, estado);
       if (!updated) {
         return res.status(400).json({ error: 'No se pudo actualizar el estado' });
@@ -228,6 +246,24 @@ const reservationController = {
         }
 
         const reserva = reservas[0];
+
+        if (estado === 'cancelada') {
+            const now = new Date();
+            const checkIn = new Date(reserva.check_in);
+            const horasAntes = (checkIn - now) / (1000 * 60 * 60);
+            let reembolso = 0;
+
+            if (horasAntes >= 48) {
+                reembolso = Number(reserva.total);
+            } else if (horasAntes > 24) {
+                reembolso = Number(reserva.total) * 0.5;
+            }
+
+            await pool.query(
+                'UPDATE reservations SET reembolso = ? WHERE id = ?',
+                [reembolso, id]
+            );
+        }
 
         await pool.query(
             'UPDATE reservations SET estado = ? WHERE id = ?',

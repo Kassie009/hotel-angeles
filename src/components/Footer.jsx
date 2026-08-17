@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail } from 'lucide-react';
 
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
 const Footer = () => {
   return (
     <footer className="bg-cafe-900 text-white">
@@ -33,12 +37,12 @@ const Footer = () => {
             <h4 className="font-bold text-lg mb-3">Enlaces</h4>
             <ul className="space-y-2 text-sm opacity-80">
               <li>
-                <Link to="/" className="hover:opacity-100">
+                <Link to="/" onClick={scrollToTop} className="hover:opacity-100">
                   Inicio
                 </Link>
               </li>
               <li>
-                <Link to="/rooms" className="hover:opacity-100">
+                <Link to="/rooms" onClick={scrollToTop} className="hover:opacity-100">
                   Habitaciones
                 </Link>
               </li>
@@ -49,12 +53,12 @@ const Footer = () => {
             <h4 className="font-bold text-lg mb-3">Legal</h4>
             <ul className="space-y-2 text-sm opacity-80">
               <li>
-                <Link to="/terms" className="hover:opacity-100">
+                <Link to="/terms" onClick={scrollToTop} className="hover:opacity-100">
                   Términos y Condiciones
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="hover:opacity-100">
+                <Link to="/privacy" onClick={scrollToTop} className="hover:opacity-100">
                   Aviso de Privacidad
                 </Link>
               </li>

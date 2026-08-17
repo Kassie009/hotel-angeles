@@ -108,6 +108,18 @@ const Booking = () => {
     return 0;
   };
 
+  const calcularDescuento = (noches, precioNoche) => {
+    const subtotalBase = precioNoche * noches;
+    if (noches >= 30) {
+      return Math.round(subtotalBase * 0.20 * 100) / 100;
+    } else if (noches >= 14) {
+      return Math.round((subtotalBase * 0.15 + 200) * 100) / 100;
+    } else if (noches >= 7) {
+      return Math.round((subtotalBase * 0.10 + 100) * 100) / 100;
+    }
+    return 0;
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -118,7 +130,9 @@ const Booking = () => {
     if (!validarFechas()) return;
 
     const noches = calcularNoches();
-    const total = room.precio * noches;
+    const subtotal = room.precio * noches;
+    const descuento = calcularDescuento(noches, room.precio);
+    const total = subtotal - descuento;
 
     if (Number(formData.huespedes) > Number(room.capacidad)) {
       alert(`El máximo de huéspedes para esta habitación es ${room.capacidad}`);
@@ -134,8 +148,9 @@ const Booking = () => {
       check_in: formData.checkIn,
       check_out: formData.checkOut,
       noches: noches,
-      subtotal: total,   
+      subtotal: subtotal,   
       iva: 0,            
+      descuento: descuento,
       total: total,
       huesped: formData.nombre,
       huespedes: formData.huespedes
@@ -197,7 +212,9 @@ const Booking = () => {
   }
 
   const noches = calcularNoches();
-  const total = room.precio * noches;
+  const subtotal = room.precio * noches;
+  const descuento = calcularDescuento(noches, room.precio);
+  const total = subtotal - descuento;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -332,6 +349,23 @@ const Booking = () => {
               <span className="text-gray-700">Noches</span>
               <span className="text-gray-900 font-medium">{noches}</span>
             </div>
+            {descuento > 0 && (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-gray-700">Subtotal</span>
+                  <span className="text-gray-900 font-medium">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-green-600">
+                  <span className="font-medium">Descuento estancia larga</span>
+                  <span className="font-bold">-${descuento.toFixed(2)}</span>
+                </div>
+                <p className="text-xs text-green-600">
+                  {noches >= 30 ? '20% de descuento' :
+                   noches >= 14 ? '$200 fijo + 15% de descuento' :
+                   '$100 fijo + 10% de descuento'}
+                </p>
+              </>
+            )}
             <div className="border-t pt-2 mt-2 flex justify-between font-bold">
               <span className="text-gray-900">TOTAL A PAGAR</span>
               <span className="text-gray-900 text-xl">${total.toFixed(2)}</span>

@@ -4,16 +4,16 @@ const Reservation = {
     create: async (data) => {
         const { 
             codigo, room_id, nombre, email, telefono, habitacion,
-            check_in, check_out, noches, subtotal, iva, total
+            check_in, check_out, noches, subtotal, iva, descuento, total
         } = data;
         
         const [result] = await db.query(
             `INSERT INTO reservations 
              (codigo, room_id, nombre, email, telefono, habitacion, 
-              check_in, check_out, noches, subtotal, iva, total) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              check_in, check_out, noches, subtotal, iva, descuento, total) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [codigo, room_id, nombre, email, telefono, habitacion,
-             check_in, check_out, noches, subtotal || 0, iva || 0, total || 0]
+             check_in, check_out, noches, subtotal || 0, iva || 0, descuento || 0, total || 0]
         );
         return result.insertId;
     },

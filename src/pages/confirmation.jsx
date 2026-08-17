@@ -190,6 +190,9 @@ const Confirmation = () => {
             <div>
               <p className="text-sm text-gray-700">Total a pagar</p>
               <p className="text-xl font-bold text-gray-900">${total.toFixed(2)}</p>
+              {Number(reserva.descuento) > 0 && (
+                <p className="text-xs text-green-600 mt-1">Incluye descuento de estancia larga: -${Number(reserva.descuento).toFixed(2)}</p>
+              )}
             </div>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-4">
@@ -272,6 +275,11 @@ const Confirmation = () => {
         {reserva.estado === 'cancelada' && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-8 text-center">
             <p className="text-red-800 font-medium">Esta reserva ha sido cancelada. Si tienes dudas, contacta al hotel.</p>
+            {Number(reserva.reembolso) > 0 && (
+              <p className="text-red-700 mt-2">
+                Reembolso: <span className="font-bold">${Number(reserva.reembolso).toFixed(2)}</span> MXN
+              </p>
+            )}
           </div>
         )}
 

@@ -374,6 +374,33 @@ const Home = () => {
           </div>
         </div>
       </div>
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-2">Descuentos por Estancia Larga</h2>
+          <p className="text-gray-700 text-center mb-8">Ahorra más cuanto más te quedas</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 bg-beige-50 rounded-xl">
+              <p className="text-4xl font-bold text-cafe-200 mb-2">10%</p>
+              <p className="font-semibold text-gray-900 text-lg">Semana</p>
+              <p className="text-sm text-gray-700 mt-1">7 noches o más</p>
+              <p className="text-xs text-gray-500 mt-2">+ $100 MXN de descuento fijo</p>
+            </div>
+            <div className="text-center p-6 bg-beige-50 rounded-xl">
+              <p className="text-4xl font-bold text-cafe-200 mb-2">15%</p>
+              <p className="font-semibold text-gray-900 text-lg">Quincena</p>
+              <p className="text-sm text-gray-700 mt-1">14 noches o más</p>
+              <p className="text-xs text-gray-500 mt-2">+ $200 MXN de descuento fijo</p>
+            </div>
+            <div className="text-center p-6 bg-beige-50 rounded-xl">
+              <p className="text-4xl font-bold text-cafe-200 mb-2">20%</p>
+              <p className="font-semibold text-gray-900 text-lg">Mes</p>
+              <p className="text-sm text-gray-700 mt-1">30 noches o más</p>
+              <p className="text-xs text-gray-500 mt-2">Descuento aplicado al total</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

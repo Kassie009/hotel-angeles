@@ -189,6 +189,9 @@ disabled={loading}
             <div className="bg-beige-50 rounded-xl p-4">
               <p className="text-sm text-gray-700">Total a pagar</p>
               <p className="font-bold text-gray-900 text-lg">${Number(reserva.total).toFixed(2)}</p>
+              {Number(reserva.descuento) > 0 && (
+                <p className="text-xs text-green-600 mt-1">Incluye descuento: -${Number(reserva.descuento).toFixed(2)}</p>
+              )}
             </div>
             <div className="bg-beige-50 rounded-xl p-4">
               <p className="text-sm text-gray-700">Check-in</p>
@@ -251,6 +254,11 @@ disabled={loading}
                 <XCircle size={18} className="flex-shrink-0 mt-0.5" />
                 <span>Esta reserva ha sido <strong>cancelada</strong>. Si tienes dudas, contacta al hotel.</span>
               </p>
+              {Number(reserva.reembolso) > 0 && (
+                <p className="text-sm text-red-700 mt-2 ml-7">
+                  Reembolso: <span className="font-bold">${Number(reserva.reembolso).toFixed(2)}</span> MXN
+                </p>
+              )}
             </div>
           )}
 
