@@ -47,11 +47,18 @@ const AdminReservations = () => {
           (r) =>
             r.estado === 'confirmada' ||
             r.estado === 'checkin_realizado' ||
-            r.estado === 'checkout_realizado'
+            r.estado === 'checkout_realizado' ||
+            r.estado === 'cancelada'
         )
         .reduce((sum, r) => sum + (r.total || 0), 0);
 
-      setStats({ total, pendientes, confirmadas, ingresos });
+      const reembolsos = reservasConNumeros
+        .filter((r) => r.estado === 'cancelada')
+        .reduce((sum, r) => sum + (parseFloat(r.reembolso) || 0), 0);
+
+      const ingresosNetos = ingresos - reembolsos;
+
+      setStats({ total, pendientes, confirmadas, ingresos: ingresosNetos });
     } catch (err) {
       
       const msg = err?.response?.data?.error || err?.response?.data?.message || err?.message || 'Error al cargar las reservas';
