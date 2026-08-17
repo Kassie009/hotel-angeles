@@ -29,6 +29,10 @@ const ReceptionDashboard = () => {
         (async () => {
             await cargarReservas();
         })();
+        const interval = setInterval(() => {
+            cargarReservas();
+        }, 15000);
+        return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filtro.estado]);
 
@@ -179,7 +183,7 @@ const ReceptionDashboard = () => {
                                             <td className="px-6 py-4 text-sm">{reserva.habitacion_nombre}</td>
                                             <td className="px-6 py-4 text-sm">{new Date(reserva.check_in).toLocaleDateString()}</td>
                                             <td className="px-6 py-4 text-sm">{new Date(reserva.check_out).toLocaleDateString()}</td>
-                                            <td className="px-6 py-4 text-sm font-bold">${(Number(reserva.total) || 0).toFixed(2)}</td>
+                                            <td className="px-6 py-4 text-sm font-bold">${(Number(reserva.total) || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                             <td className="px-6 py-4">
                                                 <span className={`px-2 py-1 rounded text-xs ${
                                                     reserva.estado === 'confirmada'

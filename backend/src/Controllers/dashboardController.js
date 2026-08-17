@@ -17,11 +17,13 @@ const dashboardController = {
             );
             console.log('Reservas por estado:', reservasPorEstado);
             const [ingresosTotales] = await pool.query(
-                `SELECT SUM(total) as total 
+                `SELECT 
+                    SUM(total) as bruto,
+                    COALESCE((SELECT SUM(reembolso) FROM reservations WHERE estado = 'cancelada'), 0) as reembolsos
                  FROM reservations 
-                 WHERE estado IN ('confirmada', 'checkin_realizado', 'checkout_realizado')`
+                 WHERE estado IN ('confirmada', 'checkin_realizado', 'checkout_realizado', 'cancelada')`
             );
-            const ingresosTotalesNum = parseFloat(ingresosTotales[0]?.total) || 0;
+            const ingresosTotalesNum = (parseFloat(ingresosTotales[0]?.bruto) || 0) - (parseFloat(ingresosTotales[0]?.reembolsos) || 0);
             console.log('Ingresos totales:', ingresosTotalesNum);
             const [ocupacion] = await pool.query(
                 `SELECT 
@@ -116,9 +118,12 @@ const dashboardController = {
                 SELECT 
                     DATE(fecha_reserva) as fecha,
                     COUNT(*) as reservas,
-                    SUM(total) as total
+                    SUM(total) - COALESCE(
+                        (SELECT SUM(r2.reembolso) FROM reservations r2 
+                         WHERE r2.estado = 'cancelada' AND DATE(r2.fecha_reserva) = DATE(reservations.fecha_reserva)), 0
+                    ) as total
                 FROM reservations 
-                WHERE estado IN ('confirmada', 'checkin_realizado', 'checkout_realizado')
+                WHERE estado IN ('confirmada', 'checkin_realizado', 'checkout_realizado', 'cancelada')
             `;
             const params = [];
 

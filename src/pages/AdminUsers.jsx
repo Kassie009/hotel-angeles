@@ -35,9 +35,10 @@ const AdminUsers = () => {
       
       setUsers(usuariosData);
       setError(null);
-    } catch {
+    } catch (err) {
       
-      setError('Error al cargar los usuarios');
+      const msg = err?.response?.data?.message || err?.response?.data?.error || 'Error al cargar los usuarios';
+      setError(msg);
     } finally {
       setLoading(false);
     }

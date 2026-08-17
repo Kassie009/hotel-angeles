@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Breadcrumbs from '../components/Breadcrumbs';
 import api from '../Config/api';
@@ -9,6 +9,10 @@ const SearchReservation = () => {
   const [reserva, setReserva] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Log útil para depurar errores de búsqueda
   const normalizeQuery = (q) => (q || '').trim().toUpperCase();

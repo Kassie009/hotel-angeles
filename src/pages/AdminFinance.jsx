@@ -19,12 +19,13 @@ const AdminFinance = () => {
     canceladas: 0
   });
 
+  const formatMoney = (amount) => {
+    return Number(amount || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
   const cargarDatos = async () => {
     try {
-      
-
       const response = await api.get('/reservations');
-      
 
       let reservasData = [];
       if (Array.isArray(response.data)) {
@@ -48,30 +49,41 @@ const AdminFinance = () => {
       const checkout = reservasConNumeros.filter(r => r.estado === 'checkout_realizado').length;
       const canceladas = reservasConNumeros.filter(r => r.estado === 'cancelada').length;
       
+      const estadosConIngreso = ['confirmada', 'checkin_realizado', 'checkout_realizado', 'cancelada'];
+
+      const reembolsos = reservasConNumeros
+        .filter(r => r.estado === 'cancelada')
+        .reduce((sum, r) => sum + (parseFloat(r.reembolso) || 0), 0);
+
       const ingresos = reservasConNumeros
-        .filter(r => r.estado === 'confirmada' || r.estado === 'checkin_realizado' || r.estado === 'checkout_realizado')
-        .reduce((sum, r) => sum + (r.total || 0), 0);
+        .filter(r => estadosConIngreso.includes(r.estado))
+        .reduce((sum, r) => sum + (r.total || 0), 0) - reembolsos;
 
       const hoy = new Date();
       const mesActual = hoy.getMonth();
       const añoActual = hoy.getFullYear();
 
-      const ingresosMes = reservasConNumeros
+      const reembolsosMes = reservasConNumeros
         .filter(r => {
           const fecha = new Date(r.fecha_reserva);
-          return (r.estado === 'confirmada' || r.estado === 'checkin_realizado' || r.estado === 'checkout_realizado') &&
+          return r.estado === 'cancelada' &&
                  fecha.getMonth() === mesActual &&
                  fecha.getFullYear() === añoActual;
         })
-        .reduce((sum, r) => sum + (r.total || 0), 0);
+        .reduce((sum, r) => sum + (parseFloat(r.reembolso) || 0), 0);
+
+      const ingresosMes = reservasConNumeros
+        .filter(r => {
+          const fecha = new Date(r.fecha_reserva);
+          return estadosConIngreso.includes(r.estado) &&
+                 fecha.getMonth() === mesActual &&
+                 fecha.getFullYear() === añoActual;
+        })
+        .reduce((sum, r) => sum + (r.total || 0), 0) - reembolsosMes;
 
       const pagosPendientes = reservasConNumeros
         .filter(r => r.estado === 'pendiente')
         .reduce((sum, r) => sum + (r.total || 0), 0);
-
-      const reembolsos = reservasConNumeros
-        .filter(r => r.estado === 'cancelada')
-        .reduce((sum, r) => sum + (r.total || 0), 0) * 0.1;
 
       setStats({
         ingresosTotales: ingresos,
@@ -87,7 +99,6 @@ const AdminFinance = () => {
 
       setError(null);
     } catch {
-      
       setError('Error al cargar los datos financieros');
     } finally {
       setLoading(false);
@@ -97,6 +108,8 @@ const AdminFinance = () => {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     cargarDatos();
+    const interval = setInterval(cargarDatos, 15000);
+    return () => clearInterval(interval);
   }, []);
 
   const ocupacion = reservas.filter(r => r.estado === 'checkin_realizado' || r.estado === 'confirmada').length;
@@ -182,8 +195,8 @@ const AdminFinance = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-gray-700 text-sm">Ingresos Totales</p>
-                <p className="text-3xl font-bold text-gray-900">${stats.ingresosTotales.toFixed(2)}</p>
-                <p className="text-xs text-gray-700 mt-1">Reservas confirmadas y checkouts</p>
+                <p className="text-3xl font-bold text-gray-900">${formatMoney(stats.ingresosTotales)}</p>
+                <p className="text-xs text-gray-700 mt-1">Ingresos netos (después de reembolsos)</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                 <DollarSign size={24} className="text-green-600" />
@@ -195,7 +208,7 @@ const AdminFinance = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-gray-700 text-sm">Ingresos del Mes</p>
-                <p className="text-3xl font-bold text-gray-900">${stats.ingresosMes.toFixed(2)}</p>
+                <p className="text-3xl font-bold text-gray-900">${formatMoney(stats.ingresosMes)}</p>
               </div>
               <div className="w-12 h-12 bg-blue-200 rounded-xl flex items-center justify-center">
                 <Calendar size={24} className="text-blue-700" />
@@ -207,7 +220,7 @@ const AdminFinance = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-gray-700 text-sm">Pagos Pendientes</p>
-                <p className="text-3xl font-bold text-gray-900">${stats.pagosPendientes.toFixed(2)}</p>
+                <p className="text-3xl font-bold text-gray-900">${formatMoney(stats.pagosPendientes)}</p>
               </div>
               <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
                 <TrendingDown size={24} className="text-yellow-600" />
@@ -219,8 +232,8 @@ const AdminFinance = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-gray-700 text-sm">Total Reembolsos</p>
-                <p className="text-3xl font-bold text-red-600">${stats.reembolsos.toFixed(2)}</p>
-                <p className="text-xs text-gray-700 mt-1">10% de reservas canceladas</p>
+                <p className="text-3xl font-bold text-red-600">${formatMoney(stats.reembolsos)}</p>
+                <p className="text-xs text-gray-700 mt-1">Reembolsos de reservas canceladas</p>
               </div>
               <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
                 <RefreshCw size={24} className="text-red-600" />

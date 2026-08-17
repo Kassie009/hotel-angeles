@@ -74,6 +74,10 @@ const getImageSrc = (imagen) => {
 const Rooms = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [checkIn, setCheckIn] = useState(
     searchParams.get('checkIn') || ''
   );
@@ -128,12 +132,17 @@ const Rooms = () => {
     fetchRooms();
   }, []);
 
+  const parseLocalDate = (str) => {
+    const [y, m, d] = str.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  };
+
   const validarFechasFiltro = () => {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
-    const fechaInicio = new Date(checkIn);
-    const fechaFin = new Date(checkOut);
+    const fechaInicio = parseLocalDate(checkIn);
+    const fechaFin = parseLocalDate(checkOut);
 
     const fechaLimite = new Date();
     fechaLimite.setMonth(
@@ -271,12 +280,8 @@ const Rooms = () => {
                   <input
                     type="date"
                     value={checkIn}
-                    min={new Date().toISOString().split('T')[0]}
-                    max={(() => {
-                      const d = new Date();
-                      d.setMonth(d.getMonth() + 6);
-                      return d.toISOString().split('T')[0];
-                    })()}
+                    min={(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })()}
+                    max={(() => { const d = new Date(); d.setMonth(d.getMonth() + 6); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })()}
                     onChange={(e) =>
                       setCheckIn(e.target.value)
                     }
@@ -300,12 +305,8 @@ const Rooms = () => {
                   <input
                     type="date"
                     value={checkOut}
-                    min={new Date().toISOString().split('T')[0]}
-                    max={(() => {
-                      const d = new Date();
-                      d.setMonth(d.getMonth() + 6);
-                      return d.toISOString().split('T')[0];
-                    })()}
+                    min={(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })()}
+                    max={(() => { const d = new Date(); d.setMonth(d.getMonth() + 6); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })()}
                     onChange={(e) =>
                       setCheckOut(e.target.value)
                     }

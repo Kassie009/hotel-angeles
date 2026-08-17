@@ -1,7 +1,7 @@
 const Reservation = require('../Models/Reservation');
 const { generarCodigo } = require('../Utils/codigoGenerador');
 const pool = require('../Config/db');
-const { sendConfirmationEmail } = require('../Utils/emailService');
+const { sendConfirmationEmail, sendCancellationEmail } = require('../Utils/emailService');
 
 const reservationController = {
   create: async (req, res) => {
@@ -111,6 +111,17 @@ const reservationController = {
           'UPDATE reservations SET reembolso = ? WHERE codigo = ?',
           [reembolso, codigo]
         );
+
+        sendCancellationEmail({
+            email: reserva.email,
+            nombre: reserva.nombre,
+            codigo: reserva.codigo,
+            checkIn: reserva.check_in,
+            checkOut: reserva.check_out,
+            habitacion: reserva.habitacion,
+            total: Number(reserva.total) || 0,
+            reembolso: reembolso
+          }).catch(err => console.error('Error al enviar correo de cancelación:', err));
       }
 
       const updated = await Reservation.updateStatus(codigo, estado);
@@ -133,8 +144,7 @@ const reservationController = {
       }
 
       if (estado === 'confirmada') {
-        try {
-          await sendConfirmationEmail({
+        sendConfirmationEmail({
             email: reserva.email,
             nombre: reserva.nombre,
             codigo: reserva.codigo,
@@ -142,10 +152,7 @@ const reservationController = {
             checkOut: reserva.check_out,
             habitacion: reserva.habitacion,
             total: Number(reserva.total) || 0
-          });
-        } catch (emailError) {
-          console.error('Error al enviar correo de confirmación:', emailError);
-        }
+          }).catch(err => console.error('Error al enviar correo de confirmación:', err));
       }
 
 
@@ -263,6 +270,17 @@ const reservationController = {
                 'UPDATE reservations SET reembolso = ? WHERE id = ?',
                 [reembolso, id]
             );
+
+            sendCancellationEmail({
+                email: reserva.email,
+                nombre: reserva.nombre,
+                codigo: reserva.codigo,
+                checkIn: reserva.check_in,
+                checkOut: reserva.check_out,
+                habitacion: reserva.habitacion,
+                total: Number(reserva.total) || 0,
+                reembolso: reembolso
+            }).catch(err => console.error('Error al enviar correo de cancelación:', err));
         }
 
         await pool.query(

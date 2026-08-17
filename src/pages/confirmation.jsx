@@ -13,6 +13,7 @@ const Confirmation = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchReserva = async () => {
       try {
         

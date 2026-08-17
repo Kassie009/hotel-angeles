@@ -64,6 +64,8 @@ const AdminReservations = () => {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
+    const interval = setInterval(fetchData, 15000);
+    return () => clearInterval(interval);
   }, []);
 
 
@@ -264,7 +266,7 @@ const AdminReservations = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-700">Ingresos</p>
-                  <p className="text-2xl font-bold text-gray-900">${stats.ingresos.toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-gray-900">${stats.ingresos.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 </div>
                 <DollarSign className="text-blue-800" size={28} />
               </div>
@@ -343,7 +345,7 @@ const AdminReservations = () => {
                       <div>Out: {reserva.check_out ? new Date(reserva.check_out).toLocaleDateString('es-MX') : 'N/A'}</div>
                       <div className="text-xs text-gray-500">{reserva.noches || 0} noches</div>
                     </td>
-                    <td className="px-6 py-4 font-bold">${(reserva.total || 0).toFixed(2)}</td>
+                    <td className="px-6 py-4 font-bold">${(reserva.total || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                     <td className="px-6 py-4">{getStatusBadge(reserva.estado)}</td>
                     <td className="px-6 py-4">
                       <div className="flex flex-wrap gap-2">

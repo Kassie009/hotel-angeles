@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -23,9 +24,18 @@ import AdminUsers from './pages/AdminUsers';
 import AdminProfile from './pages/AdminProfile';
 import ReceptionDashboard from './pages/ReceptionDashboard';
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   return (
     <AuthProvider>
+      <ScrollToTop />
       <div className="min-h-screen flex flex-col bg-beige-50">
         <Navbar />
         <main className="flex-grow">

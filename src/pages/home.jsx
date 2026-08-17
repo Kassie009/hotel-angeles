@@ -119,11 +119,16 @@ const Home = () => {
 
   ];
 
+  const parseLocalDate = (str) => {
+    const [y, m, d] = str.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  };
+
   const validarFechas = () => {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    const fechaInicio = new Date(checkIn);
-    const fechaFin = new Date(checkOut);
+    const fechaInicio = parseLocalDate(checkIn);
+    const fechaFin = parseLocalDate(checkOut);
     const fechaLimite = new Date();
     fechaLimite.setMonth(fechaLimite.getMonth() + 6);
 
@@ -152,16 +157,13 @@ const Home = () => {
 
   const hoyISO = (() => {
     const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    // YYYY-MM-DD
-    return d.toISOString().split('T')[0];
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   })();
 
   const fechaLimiteISO = (() => {
     const d = new Date();
     d.setMonth(d.getMonth() + 6);
-    d.setHours(0, 0, 0, 0);
-    return d.toISOString().split('T')[0];
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   })();
 
   const handleBuscar = () => {
@@ -326,6 +328,30 @@ const Home = () => {
         )}
       </div>
 
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-gradient-to-br from-cafe-900 via-blue-900 to-cafe-900 rounded-2xl p-8 md:p-12 text-white">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-2">Descuentos por Estancia Larga</h2>
+          <p className="text-blue-200 text-center mb-8">Ahorra más cuanto más te quedas</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <p className="text-4xl font-bold mb-2">10%</p>
+              <p className="font-semibold text-lg">Semana</p>
+              <p className="text-sm text-blue-200 mt-1">7 noches o más</p>
+            </div>
+            <div className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <p className="text-4xl font-bold mb-2">15%</p>
+              <p className="font-semibold text-lg">Quincena</p>
+              <p className="text-sm text-blue-200 mt-1">14 noches o más</p>
+            </div>
+            <div className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <p className="text-4xl font-bold mb-2">20%</p>
+              <p className="font-semibold text-lg">Mes</p>
+              <p className="text-sm text-blue-200 mt-1">30 noches o más</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       
       <div className="bg-white py-16">
         <div className="container mx-auto px-4">
@@ -375,32 +401,7 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-2">Descuentos por Estancia Larga</h2>
-          <p className="text-gray-700 text-center mb-8">Ahorra más cuanto más te quedas</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-6 bg-beige-50 rounded-xl">
-              <p className="text-4xl font-bold text-cafe-200 mb-2">10%</p>
-              <p className="font-semibold text-gray-900 text-lg">Semana</p>
-              <p className="text-sm text-gray-700 mt-1">7 noches o más</p>
-              <p className="text-xs text-gray-500 mt-2">+ $100 MXN de descuento fijo</p>
-            </div>
-            <div className="text-center p-6 bg-beige-50 rounded-xl">
-              <p className="text-4xl font-bold text-cafe-200 mb-2">15%</p>
-              <p className="font-semibold text-gray-900 text-lg">Quincena</p>
-              <p className="text-sm text-gray-700 mt-1">14 noches o más</p>
-              <p className="text-xs text-gray-500 mt-2">+ $200 MXN de descuento fijo</p>
-            </div>
-            <div className="text-center p-6 bg-beige-50 rounded-xl">
-              <p className="text-4xl font-bold text-cafe-200 mb-2">20%</p>
-              <p className="font-semibold text-gray-900 text-lg">Mes</p>
-              <p className="text-sm text-gray-700 mt-1">30 noches o más</p>
-              <p className="text-xs text-gray-500 mt-2">Descuento aplicado al total</p>
-            </div>
-          </div>
-        </div>
-      </div>
+
     </div>
   );
 };

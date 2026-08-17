@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import Breadcrumbs from '../components/Breadcrumbs';
 import api from '../Config/api';  
 import sencillaImg from '../assets/sencilla.jpg';
@@ -29,6 +29,7 @@ const getImage = (path) => {
 const Booking = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,10 +37,14 @@ const Booking = () => {
     nombre: '',
     email: '',
     telefono: '',
-    check_in: '',
-    check_out: '',
-    huespedes: 1
+    checkIn: searchParams.get('checkIn') || '',
+    checkOut: searchParams.get('checkOut') || '',
+    huespedes: Number(searchParams.get('guests')) || 1
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -71,11 +76,16 @@ const Booking = () => {
     fetchRoom();
   }, [id]);
 
+  const parseLocalDate = (str) => {
+    const [y, m, d] = str.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  };
+
   const validarFechas = () => {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    const fechaInicio = new Date(formData.checkIn);
-    const fechaFin = new Date(formData.checkOut);
+    const fechaInicio = parseLocalDate(formData.checkIn);
+    const fechaFin = parseLocalDate(formData.checkOut);
     const fechaLimite = new Date();
     fechaLimite.setMonth(fechaLimite.getMonth() + 6);
 
@@ -100,8 +110,8 @@ const Booking = () => {
 
   const calcularNoches = () => {
     if (formData.checkIn && formData.checkOut) {
-      const inicio = new Date(formData.checkIn);
-      const fin = new Date(formData.checkOut);
+      const inicio = parseLocalDate(formData.checkIn);
+      const fin = parseLocalDate(formData.checkOut);
       const diff = Math.ceil((fin - inicio) / (1000 * 60 * 60 * 24));
       return diff > 0 ? diff : 0;
     }
@@ -272,12 +282,8 @@ const Booking = () => {
                   value={formData.checkIn}
                   onChange={handleChange}
                   required
-                  min={new Date().toISOString().split('T')[0]}
-                  max={(() => {
-                    const d = new Date();
-                    d.setMonth(d.getMonth() + 6);
-                    return d.toISOString().split('T')[0];
-                  })()}
+                  min={(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })()}
+                  max={(() => { const d = new Date(); d.setMonth(d.getMonth() + 6); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })()}
                   className="w-full px-4 py-2 border border-beige-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cafe-100"
                 />
               </div>
@@ -289,12 +295,8 @@ const Booking = () => {
                   value={formData.checkOut}
                   onChange={handleChange}
                   required
-                  min={new Date().toISOString().split('T')[0]}
-                  max={(() => {
-                    const d = new Date();
-                    d.setMonth(d.getMonth() + 6);
-                    return d.toISOString().split('T')[0];
-                  })()}
+                  min={(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })()}
+                  max={(() => { const d = new Date(); d.setMonth(d.getMonth() + 6); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })()}
                   className="w-full px-4 py-2 border border-beige-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cafe-100"
                 />
               </div>
@@ -357,13 +359,8 @@ const Booking = () => {
                 </div>
                 <div className="flex justify-between text-green-600">
                   <span className="font-medium">Descuento estancia larga</span>
-                  <span className="font-bold">-${descuento.toFixed(2)}</span>
+                  <span className="font-bold">-{noches >= 30 ? '20%' : noches >= 14 ? '15%' : '10%'}</span>
                 </div>
-                <p className="text-xs text-green-600">
-                  {noches >= 30 ? '20% de descuento' :
-                   noches >= 14 ? '$200 fijo + 15% de descuento' :
-                   '$100 fijo + 10% de descuento'}
-                </p>
               </>
             )}
             <div className="border-t pt-2 mt-2 flex justify-between font-bold">

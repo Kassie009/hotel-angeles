@@ -22,6 +22,8 @@ const AdminDashboard = () => {
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         cargarEstadisticas();
+        const interval = setInterval(cargarEstadisticas, 15000);
+        return () => clearInterval(interval);
     }, []);
 
     if (loading) {
@@ -69,7 +71,7 @@ const AdminDashboard = () => {
                         <div>
                             <p className="text-gray-500 text-sm">Ingresos Totales</p>
                             <p className="text-3xl font-bold text-green-600">
-                                ${stats?.ingresosTotales?.toFixed(2) || '0.00'}
+                                ${stats?.ingresosTotales?.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                             </p>
                         </div>
                         <div className="bg-green-100 p-3 rounded-full">
@@ -112,7 +114,7 @@ const AdminDashboard = () => {
                                     <td className="py-2">{reserva.nombre}</td>
                                     <td className="py-2">{reserva.habitacion_nombre}</td>
                                     <td className="py-2">{new Date(reserva.check_in).toLocaleDateString()}</td>
-                                    <td className="py-2 font-bold">${(parseFloat(reserva.total) || 0).toFixed(2)}</td>
+                                    <td className="py-2 font-bold">${(parseFloat(reserva.total) || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                     <td className="py-2">
                                         <span
                                             className={`px-2 py-1 rounded text-xs ${
